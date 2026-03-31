@@ -22,7 +22,7 @@ export function Card({
   return (
     <div
       className={cn(
-        "rounded-[var(--radius-lg)] border border-[var(--color-gray-200)] bg-white shadow-[var(--shadow-sm)]",
+        "rounded-lg border border-gray-200 bg-white shadow-sm",
         paddingStyles[padding],
         className
       )}
@@ -52,11 +52,11 @@ export function CardHeader({
       {...props}
     >
       <div>
-        <h3 className="text-base font-semibold text-[var(--color-gray-900)]">
+        <h3 className="text-base font-semibold text-gray-900">
           {title}
         </h3>
         {description && (
-          <p className="mt-1 text-sm text-[var(--color-gray-500)]">
+          <p className="mt-1 text-sm text-gray-500">
             {description}
           </p>
         )}

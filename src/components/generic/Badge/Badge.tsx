@@ -2,18 +2,12 @@ import type { ReactNode } from "react";
 import { cn } from "../../../lib/utils";
 
 const variantStyles = {
-  default:
-    "bg-[var(--color-gray-100)] text-[var(--color-gray-700)]",
-  primary:
-    "bg-[var(--color-primary)]/10 text-[var(--color-primary)]",
-  success:
-    "bg-[var(--color-green-50)] text-[var(--color-green-700)]",
-  warning:
-    "bg-[var(--color-yellow-50)] text-[var(--color-yellow-700)]",
-  error:
-    "bg-[var(--color-red-50)] text-[var(--color-red-700)]",
-  info:
-    "bg-[var(--color-sky-50)] text-[var(--color-sky-700)]",
+  default: "bg-gray-100 text-gray-700",
+  primary: "bg-primary-50 text-primary",
+  success: "bg-green-50 text-green-700",
+  warning: "bg-yellow-50 text-yellow-700",
+  error: "bg-red-50 text-red-700",
+  info: "bg-sky-50 text-sky-700",
 };
 
 const sizeStyles = {

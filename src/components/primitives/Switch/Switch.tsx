@@ -43,16 +43,16 @@ export function Switch({
         disabled={disabled}
         className={cn(
           "relative inline-flex shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out",
-          "focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:ring-offset-2",
+          "focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2",
           "disabled:opacity-50 disabled:cursor-not-allowed",
-          "data-[checked]:bg-[var(--color-primary)] bg-[var(--color-gray-200)]",
+          "data-[checked]:bg-primary bg-gray-200",
           trackSizes[size]
         )}
       >
         <span
           aria-hidden="true"
           className={cn(
-            "pointer-events-none inline-block rounded-full bg-white shadow-[var(--shadow-sm)] ring-0 transition duration-200 ease-in-out",
+            "pointer-events-none inline-block rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out",
             thumbSizes[size],
             thumbTranslate[size]
           )}
@@ -61,12 +61,12 @@ export function Switch({
       {(label || description) && (
         <div>
           {label && (
-            <span className="text-sm font-medium text-[var(--color-gray-900)]">
+            <span className="text-sm font-medium text-gray-900">
               {label}
             </span>
           )}
           {description && (
-            <p className="text-sm text-[var(--color-gray-500)]">
+            <p className="text-sm text-gray-500">
               {description}
             </p>
           )}

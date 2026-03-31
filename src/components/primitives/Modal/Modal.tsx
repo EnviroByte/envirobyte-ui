@@ -48,22 +48,22 @@ export function Modal({
         <DialogPanel
           transition
           className={cn(
-            "w-full rounded-[var(--radius-xl)] bg-white shadow-[var(--shadow-lg)]",
+            "w-full rounded-lg bg-white shadow-lg",
             "transition-all duration-300 data-[closed]:scale-95 data-[closed]:opacity-0",
             sizeStyles[size],
             className
           )}
         >
           {(title || showCloseButton) && (
-            <div className="flex items-center justify-between border-b border-[var(--color-gray-200)] px-6 py-4">
+            <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4">
               <div>
                 {title && (
-                  <DialogTitle className="text-lg font-semibold text-[var(--color-gray-900)]">
+                  <DialogTitle className="text-lg font-semibold text-gray-900">
                     {title}
                   </DialogTitle>
                 )}
                 {description && (
-                  <p className="mt-1 text-sm text-[var(--color-gray-500)]">
+                  <p className="mt-1 text-sm text-gray-500">
                     {description}
                   </p>
                 )}
@@ -71,7 +71,7 @@ export function Modal({
               {showCloseButton && (
                 <button
                   onClick={onClose}
-                  className="rounded-[var(--radius-md)] p-1 text-[var(--color-gray-400)] hover:text-[var(--color-gray-600)] hover:bg-[var(--color-gray-100)] transition-colors"
+                  className="rounded-md p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
                 >
                   <X className="h-5 w-5" />
                 </button>

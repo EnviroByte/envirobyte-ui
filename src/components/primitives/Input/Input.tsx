@@ -18,14 +18,14 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         {label && (
           <label
             htmlFor={inputId}
-            className="block text-sm font-medium text-[var(--color-gray-700)] mb-1"
+            className="block text-sm font-medium text-gray-700 mb-1"
           >
             {label}
           </label>
         )}
         <div className="relative">
           {leftIcon && (
-            <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-[var(--color-gray-400)]">
+            <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
               {leftIcon}
             </div>
           )}
@@ -33,13 +33,13 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             ref={ref}
             id={inputId}
             className={cn(
-              "block w-full rounded-[var(--radius-md)] border shadow-[var(--shadow-sm)] transition-colors duration-[var(--transition-fast)]",
-              "text-sm text-[var(--color-gray-900)] placeholder:text-[var(--color-gray-400)]",
+              "block w-full rounded-md border shadow-sm transition-colors",
+              "text-sm text-gray-900 placeholder:text-gray-400",
               "focus:outline-none focus:ring-2 focus:ring-offset-0",
-              "disabled:bg-[var(--color-gray-50)] disabled:text-[var(--color-gray-500)] disabled:cursor-not-allowed",
+              "disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed",
               error
-                ? "border-[var(--color-error)] focus:ring-[var(--color-error)]"
-                : "border-[var(--color-gray-300)] focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)]",
+                ? "border-error focus:ring-error"
+                : "border-gray-300 focus:ring-primary focus:border-primary",
               leftIcon ? "pl-10" : "pl-3",
               rightIcon ? "pr-10" : "pr-3",
               "py-2",
@@ -50,18 +50,18 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             {...props}
           />
           {rightIcon && (
-            <div className="absolute inset-y-0 right-0 flex items-center pr-3 text-[var(--color-gray-400)]">
+            <div className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400">
               {rightIcon}
             </div>
           )}
         </div>
         {error && (
-          <p id={`${inputId}-error`} className="mt-1 text-sm text-[var(--color-error)]">
+          <p id={`${inputId}-error`} className="mt-1 text-sm text-error">
             {error}
           </p>
         )}
         {hint && !error && (
-          <p id={`${inputId}-hint`} className="mt-1 text-sm text-[var(--color-gray-500)]">
+          <p id={`${inputId}-hint`} className="mt-1 text-sm text-gray-500">
             {hint}
           </p>
         )}

@@ -39,7 +39,7 @@ export function Select({
   return (
     <div className={cn("w-full", className)}>
       {label && (
-        <label className="block text-sm font-medium text-[var(--color-gray-700)] mb-1">
+        <label className="block text-sm font-medium text-gray-700 mb-1">
           {label}
         </label>
       )}
@@ -47,33 +47,31 @@ export function Select({
         <div className="relative">
           <ListboxButton
             className={cn(
-              "relative w-full cursor-pointer rounded-[var(--radius-md)] border bg-white py-2 pl-3 pr-10 text-left shadow-[var(--shadow-sm)] text-sm",
+              "relative w-full cursor-pointer rounded-md border bg-white py-2 pl-3 pr-10 text-left shadow-sm text-sm",
               "focus:outline-none focus:ring-2 focus:ring-offset-0",
-              "disabled:bg-[var(--color-gray-50)] disabled:cursor-not-allowed",
+              "disabled:bg-gray-50 disabled:cursor-not-allowed",
               error
-                ? "border-[var(--color-error)] focus:ring-[var(--color-error)]"
-                : "border-[var(--color-gray-300)] focus:ring-[var(--color-primary)]"
+                ? "border-error focus:ring-error"
+                : "border-gray-300 focus:ring-primary"
             )}
           >
             <span
               className={cn(
                 "block truncate",
-                selected
-                  ? "text-[var(--color-gray-900)]"
-                  : "text-[var(--color-gray-400)]"
+                selected ? "text-gray-900" : "text-gray-400"
               )}
             >
               {selected?.label || placeholder}
             </span>
             <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-              <ChevronDown className="h-4 w-4 text-[var(--color-gray-400)]" />
+              <ChevronDown className="h-4 w-4 text-gray-400" />
             </span>
           </ListboxButton>
 
           <ListboxOptions
             transition
             className={cn(
-              "absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-[var(--radius-md)] bg-white py-1 text-sm shadow-[var(--shadow-lg)] ring-1 ring-black/5",
+              "absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-sm shadow-lg ring-1 ring-black/5",
               "focus:outline-none",
               "transition-all duration-100 data-[closed]:opacity-0 data-[closed]:scale-95"
             )}
@@ -85,7 +83,7 @@ export function Select({
                 disabled={option.disabled}
                 className={cn(
                   "relative cursor-pointer select-none py-2 pl-10 pr-4",
-                  "data-[focus]:bg-[var(--color-primary)] data-[focus]:text-white",
+                  "data-[focus]:bg-primary data-[focus]:text-white",
                   "data-[disabled]:opacity-50 data-[disabled]:cursor-not-allowed"
                 )}
               >
@@ -112,7 +110,7 @@ export function Select({
         </div>
       </Listbox>
       {error && (
-        <p className="mt-1 text-sm text-[var(--color-error)]">{error}</p>
+        <p className="mt-1 text-sm text-error">{error}</p>
       )}
     </div>
   );

@@ -10,7 +10,7 @@ function SkeletonLine({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        "h-4 animate-pulse rounded-[var(--radius-md)] bg-[var(--color-gray-200)]",
+        "h-4 animate-pulse rounded-md bg-gray-200",
         className
       )}
     />
@@ -26,7 +26,7 @@ export function LoadingSkeleton({
     return (
       <div
         className={cn(
-          "h-10 w-10 animate-pulse rounded-full bg-[var(--color-gray-200)]",
+          "h-10 w-10 animate-pulse rounded-full bg-gray-200",
           className
         )}
       />

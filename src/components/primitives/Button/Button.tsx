@@ -5,15 +5,15 @@ import { cn } from "../../../lib/utils";
 
 const variantStyles = {
   primary:
-    "bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-dark)] focus:ring-[var(--color-primary)]",
+    "bg-primary text-white hover:bg-primary-hover focus:ring-primary",
   secondary:
-    "bg-[var(--color-gray-100)] text-[var(--color-gray-900)] hover:bg-[var(--color-gray-200)] focus:ring-[var(--color-gray-400)]",
+    "bg-gray-100 text-gray-900 hover:bg-gray-200 focus:ring-gray-400",
   danger:
-    "bg-[var(--color-error)] text-white hover:bg-[var(--color-red-700)] focus:ring-[var(--color-error)]",
+    "bg-error text-white hover:bg-red-700 focus:ring-error",
   ghost:
-    "text-[var(--color-gray-700)] hover:bg-[var(--color-gray-100)] focus:ring-[var(--color-gray-400)]",
+    "text-gray-700 hover:bg-gray-100 focus:ring-gray-400",
   outline:
-    "border border-[var(--color-gray-300)] text-[var(--color-gray-700)] hover:bg-[var(--color-gray-50)] focus:ring-[var(--color-primary)]",
+    "border border-gray-300 text-gray-700 hover:bg-gray-50 focus:ring-primary",
 };
 
 const sizeStyles = {
@@ -50,7 +50,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         disabled={disabled || loading}
         className={cn(
-          "inline-flex items-center justify-center font-medium rounded-[var(--radius-md)] transition-colors duration-[var(--transition-fast)]",
+          "inline-flex items-center justify-center font-medium rounded-md transition-colors",
           "focus:outline-none focus:ring-2 focus:ring-offset-2",
           "disabled:opacity-50 disabled:cursor-not-allowed",
           variantStyles[variant],

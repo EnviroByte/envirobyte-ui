@@ -11,13 +11,30 @@ interface SegmentedControlProps<T extends string> {
   options: SegmentedOption<T>[];
   value: T;
   onChange: (value: T) => void;
+  variant?: "pill" | "rounded";
   className?: string;
 }
+
+const containerVariants = {
+  pill: "rounded-full",
+  rounded: "rounded-lg",
+};
+
+const indicatorVariants = {
+  pill: "rounded-full",
+  rounded: "rounded-md",
+};
+
+const buttonVariants = {
+  pill: "rounded-full",
+  rounded: "rounded-md",
+};
 
 export function SegmentedControl<T extends string>({
   options,
   value,
   onChange,
+  variant = "pill",
   className = "",
 }: SegmentedControlProps<T>) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -55,11 +72,11 @@ export function SegmentedControl<T extends string>({
   return (
     <div
       ref={containerRef}
-      className={`relative inline-flex w-fit rounded-full bg-gray-100 p-1 ${className}`}
+      className={`relative inline-flex w-fit ${containerVariants[variant]} bg-gray-100 p-1 ${className}`}
       role="tablist"
     >
       <div
-        className="absolute top-1 bottom-1 rounded-full bg-primary transition-[left,width] duration-200 ease-out"
+        className={`absolute top-1 bottom-1 ${indicatorVariants[variant]} bg-primary transition-[left,width] duration-200 ease-out`}
         style={{
           left: indicatorStyle.left,
           width: indicatorStyle.width,
@@ -76,7 +93,7 @@ export function SegmentedControl<T extends string>({
           role="tab"
           aria-selected={value === option.value}
           onClick={() => onChange(option.value)}
-          className={`relative z-10 rounded-full px-4 py-2.5 text-sm font-medium whitespace-nowrap transition-colors duration-200 ${
+          className={`relative z-10 ${buttonVariants[variant]} px-4 py-2.5 text-sm font-medium whitespace-nowrap transition-colors duration-200 ${
             value === option.value
               ? "text-white"
               : "text-primary hover:text-primary-hover"

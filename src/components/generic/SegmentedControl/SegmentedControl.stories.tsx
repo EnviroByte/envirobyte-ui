@@ -5,12 +5,18 @@ import { SegmentedControl } from "./SegmentedControl";
 const meta: Meta<typeof SegmentedControl> = {
   title: "Generic/SegmentedControl",
   component: SegmentedControl,
+  argTypes: {
+    variant: {
+      control: "select",
+      options: ["pill", "rounded"],
+    },
+  },
 };
 
 export default meta;
 type Story = StoryObj<typeof SegmentedControl>;
 
-function SegmentedDemo() {
+function PillDemo() {
   const [value, setValue] = useState("flare");
   return (
     <SegmentedControl
@@ -25,8 +31,28 @@ function SegmentedDemo() {
   );
 }
 
-export const Default: Story = {
-  render: () => <SegmentedDemo />,
+export const Pill: Story = {
+  render: () => <PillDemo />,
+};
+
+function RoundedDemo() {
+  const [value, setValue] = useState("Alberta");
+  return (
+    <SegmentedControl
+      options={[
+        { value: "Alberta", label: "Alberta" },
+        { value: "British Columbia", label: "British Columbia" },
+        { value: "Saskatchewan", label: "Saskatchewan" },
+      ]}
+      value={value}
+      onChange={setValue}
+      variant="rounded"
+    />
+  );
+}
+
+export const Rounded: Story = {
+  render: () => <RoundedDemo />,
 };
 
 function TwoTabDemo() {
@@ -45,4 +71,23 @@ function TwoTabDemo() {
 
 export const TwoTabs: Story = {
   render: () => <TwoTabDemo />,
+};
+
+function RoundedTwoDemo() {
+  const [value, setValue] = useState("vent");
+  return (
+    <SegmentedControl
+      options={[
+        { value: "vent", label: "Vent Limits" },
+        { value: "flare", label: "Flare Limits" },
+      ]}
+      value={value}
+      onChange={setValue}
+      variant="rounded"
+    />
+  );
+}
+
+export const RoundedTwoTabs: Story = {
+  render: () => <RoundedTwoDemo />,
 };

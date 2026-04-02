@@ -12,13 +12,6 @@ Add a `.npmrc` file to your product repo root:
 
 ```
 @envirobyte:registry=https://npm.pkg.github.com
-//npm.pkg.github.com/:_authToken=${NPM_TOKEN}
-```
-
-Set `NPM_TOKEN` in your environment (a GitHub PAT with `read:packages` scope):
-
-```bash
-export NPM_TOKEN=ghp_your_token_here
 ```
 
 ### 2. Install
@@ -101,6 +94,40 @@ const nextConfig: NextConfig = {
 
 export default nextConfig;
 ```
+
+## Publishing a New Version
+
+Publishing is automated via GitHub Actions. To release a new version:
+
+1. Bump the version:
+
+```bash
+npm version patch   # 0.1.0 → 0.1.1
+# or
+npm version minor   # 0.1.0 → 0.2.0
+# or
+npm version major   # 0.1.0 → 1.0.0
+```
+
+2. Push the tag:
+
+```bash
+git push origin main --tags
+```
+
+The `publish.yml` workflow will automatically build, typecheck, and publish to GitHub Packages.
+
+### Manual Publishing
+
+If needed, you can publish manually:
+
+```bash
+export NODE_AUTH_TOKEN=ghp_your_token_here
+npm run build
+npm publish
+```
+
+---
 
 ## Components
 
@@ -728,38 +755,6 @@ LOCAL_UI=1 npm run dev
 ```
 
 Edits to `envirobyte-ui/src/` will hot-reload in the product app.
-
-## Publishing
-
-Publishing is automated via GitHub Actions. To publish a new version:
-
-1. Bump the version:
-
-```bash
-npm version patch   # 0.1.0 → 0.1.1
-# or
-npm version minor   # 0.1.0 → 0.2.0
-# or
-npm version major   # 0.1.0 → 1.0.0
-```
-
-2. Push the tag:
-
-```bash
-git push origin main --tags
-```
-
-The `publish.yml` workflow will automatically build, typecheck, and publish to GitHub Packages.
-
-### Manual Publishing
-
-If needed, you can publish manually:
-
-```bash
-export NODE_AUTH_TOKEN=ghp_your_token_here
-npm run build
-npm publish
-```
 
 ## CI/CD
 

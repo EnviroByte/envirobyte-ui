@@ -35,7 +35,7 @@ export function Footer({
   year = new Date().getFullYear(),
 }: FooterProps) {
   return (
-    <footer className="w-full border-t border-gray-200 bg-white dark:border-zinc-800 dark:bg-zinc-950">
+    <footer className="w-full border-t border-gray-200 bg-white dark:border-zinc-800/60 dark:bg-zinc-950">
       {/* Top bar */}
       <div className="mx-auto flex max-w-screen-xl flex-col items-center justify-between gap-3 px-6 py-4 sm:flex-row">
         {/* Left: nav links */}
@@ -74,12 +74,12 @@ export function Footer({
       </div>
 
       {/* Bottom strip */}
-      <div className="bg-gray-50 px-6 py-3 text-center dark:bg-zinc-900">
-        <p className="text-sm text-gray-500 dark:text-zinc-500">
+      <div className="bg-gray-50 px-6 py-3 text-center dark:bg-zinc-950 dark:border-t dark:border-zinc-800/40">
+        <p className="text-sm text-gray-500 dark:text-zinc-600">
           Designed and Coded by {companyName} in {location}{" "}
           <span role="img" aria-label="Canadian flag">🇨🇦</span>
         </p>
-        <p className="mt-0.5 text-xs text-gray-400 dark:text-zinc-600">
+        <p className="mt-0.5 text-xs text-gray-400 dark:text-zinc-700">
           {companyName} Inc. All Rights Reserved.
         </p>
       </div>

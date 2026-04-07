@@ -1,0 +1,32 @@
+---
+description: Shared component library standards for @envirobyte/ui
+alwaysApply: true
+---
+
+# @envirobyte/ui Component Library Standards
+
+## Component Rules
+
+- Every new component needs a Storybook story in the same directory.
+- Components must be generic — no app-specific logic, no API calls, no state management.
+- Export every public component and its prop types from `src/index.ts`.
+- Tailwind classes only; no inline styles.
+
+## Project Structure
+
+- Components live in `src/components/generic/` (complex) or `src/components/primitives/` (base elements).
+- Shared utilities in `src/lib/`.
+- Theme/provider wrapper in `src/provider/`.
+- Global styles in `src/styles.css`.
+
+## Build
+
+- Built with `tsup` + PostCSS. Run `npm run build` to produce `dist/`.
+- Published to GitHub Packages as `@envirobyte/ui`.
+- Consumers (`datapivot-fe`, `rim-fe`) use `LOCAL_UI=1` for local dev.
+
+## Consumers
+
+- `datapivot-fe` and `rim-fe` depend on this package.
+- `emissionx-frontend` does NOT use this package — it has its own component set.
+- Breaking changes to exported components or props will affect both consumer apps.

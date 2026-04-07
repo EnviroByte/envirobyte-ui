@@ -14,6 +14,19 @@ type Story = StoryObj<typeof Footer>;
 
 export const Default: Story = {};
 
+export const DarkMode: Story = {
+  parameters: {
+    backgrounds: { default: "dark" },
+  },
+  decorators: [
+    (Story) => (
+      <div className="dark bg-zinc-950">
+        <Story />
+      </div>
+    ),
+  ],
+};
+
 export const CustomLinks: Story = {
   args: {
     links: [

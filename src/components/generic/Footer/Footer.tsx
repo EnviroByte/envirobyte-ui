@@ -75,11 +75,11 @@ export function Footer({
 
       {/* Bottom strip */}
       <div className="bg-gray-50 px-6 py-3 text-center dark:bg-zinc-950 dark:border-t dark:border-zinc-800/40">
-        <p className="text-sm text-gray-500 dark:text-zinc-600">
+        <p className="text-sm text-gray-500 dark:text-zinc-400">
           Designed and Coded by {companyName} in {location}{" "}
           <span role="img" aria-label="Canadian flag">🇨🇦</span>
         </p>
-        <p className="mt-0.5 text-xs text-gray-400 dark:text-zinc-700">
+        <p className="mt-0.5 text-xs text-gray-400 dark:text-zinc-400">
           {companyName} Inc. All Rights Reserved.
         </p>
       </div>

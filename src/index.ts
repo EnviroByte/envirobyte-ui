@@ -87,6 +87,3 @@ export type { PageHeadingProps } from "./components/generic/PageHeading";
 
 export { Footer } from "./components/generic/Footer";
 export type { FooterProps, FooterLink } from "./components/generic/Footer";
-
-export { Footer } from "./components/generic/Footer";
-export type { FooterProps, FooterLink } from "./components/generic/Footer";

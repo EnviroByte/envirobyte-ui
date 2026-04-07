@@ -25,12 +25,47 @@ All four consuming apps pin `"@envirobyte/ui": "*"` in `package.json`. This mean
 - Every `npm install` or CI build picks up the latest published version automatically.
 - **Trade-off**: a breaking change in this library can silently break all apps on their next build/deploy. Be careful with breaking changes.
 
-### Future: GitHub Actions Auto-Bump (Tabled)
+## 4. Automated Lockfile Updates (Active)
 
-When the risk of breaking changes grows, migrate to a GitHub Actions workflow:
-1. `envirobyte-ui` publish workflow fires a `repository_dispatch` event to each consuming repo.
-2. Each consuming repo has a workflow that bumps `@envirobyte/ui` to the exact new version, runs `npm install`, and commits the updated `package.json` + `package-lock.json`.
-3. This gives automatic updates with full traceability and easy rollback per-app.
+After each publish, GitHub Actions automatically updates the `package-lock.json` in all consumer repos so Vercel picks up the new version immediately.
+
+### How it works
+
+1. `envirobyte-ui` publish workflow (`.github/workflows/publish.yml`) runs after a `v*` tag push.
+2. After `npm publish` succeeds, it fires a `repository_dispatch` event (`ui-package-updated`) to all 4 consumer repos using `DISPATCH_TOKEN`.
+3. Each consumer repo has `.github/workflows/update-ui.yml` that:
+   - Checks out the repo
+   - Runs `npm update @envirobyte/ui` (updates the lockfile, respects `"*"` in package.json)
+   - Commits and pushes `package-lock.json` with message `chore: update @envirobyte/ui to <version>`
+4. Vercel detects the new commit → deploys with the fresh lockfile → fresh `npm install` → correct CSS generated.
+
+### Required GitHub Secrets
+
+| Secret | Where to set | Value |
+|---|---|---|
+| `DISPATCH_TOKEN` | `envirobyte-ui` repo | GitHub PAT with `repo` scope (to dispatch to other repos) |
+| `NPM_TOKEN` | each consumer repo (`eos_portal`, `datapivot-fe`, `rim-fe`, `atmosiq-fe`) | GitHub PAT with `read:packages` scope |
+| `DISPATCH_TOKEN` | each consumer repo | GitHub PAT with `contents: write` scope (to push lockfile commits) |
+
+> The simplest setup: use a single PAT with `repo` + `read:packages` + `workflow` scopes and add it as both `DISPATCH_TOKEN` and `NPM_TOKEN` everywhere.
+
+### The full publish flow (no manual steps)
+
+```
+npm version patch && git push origin main --tags
+        ↓
+  publish.yml runs
+        ↓
+  npm publish → v0.x.x on GitHub Packages
+        ↓
+  repository_dispatch → 4 consumer repos
+        ↓
+  update-ui.yml runs in each repo
+        ↓
+  npm update @envirobyte/ui → lockfile updated → git push
+        ↓
+  Vercel deploys with fresh lockfile → correct CSS → live
+```
 
 ## 4. NPM Token Setup for Consuming Apps
 

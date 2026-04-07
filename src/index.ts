@@ -84,3 +84,9 @@ export type { SearchInputProps } from "./components/generic/SearchInput";
 
 export { PageHeading } from "./components/generic/PageHeading";
 export type { PageHeadingProps } from "./components/generic/PageHeading";
+
+export { Footer } from "./components/generic/Footer";
+export type { FooterProps, FooterLink } from "./components/generic/Footer";
+
+export { Footer } from "./components/generic/Footer";
+export type { FooterProps, FooterLink } from "./components/generic/Footer";

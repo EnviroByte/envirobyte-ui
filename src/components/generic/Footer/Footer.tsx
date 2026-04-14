@@ -37,7 +37,7 @@ export function Footer({
   return (
     <footer className="w-full border-t border-gray-200 bg-white dark:border-zinc-800/60 dark:bg-zinc-950">
       {/* Top bar */}
-      <div className="mx-auto flex max-w-screen-xl flex-col items-center justify-between gap-3 px-6 py-4 sm:flex-row">
+      <div className="mx-auto flex w-full flex-col items-center justify-between gap-3 px-6 py-4 sm:flex-row">
         {/* Left: nav links */}
         <nav className="flex flex-wrap items-center gap-x-4 gap-y-1">
           {links.map((link, index) => (

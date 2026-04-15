@@ -87,3 +87,6 @@ export type { PageHeadingProps } from "./components/generic/PageHeading";
 
 export { Footer } from "./components/generic/Footer";
 export type { FooterProps, FooterLink } from "./components/generic/Footer";
+
+export { Navbar } from "./components/generic/Navbar";
+export type { NavbarProps, NavbarUser, NavbarCompany, NavbarApp } from "./components/generic/Navbar";

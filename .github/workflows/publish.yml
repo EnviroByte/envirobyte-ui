@@ -1,8 +1,19 @@
-name: Publish to GitHub Packages
+name: Publish @envirobyte/ui
 
 on:
   push:
-    tags: ["v*"]
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      version_override:
+        description: "Optional version override for downstream dispatch (defaults to package.json version)"
+        required: false
+        type: string
+
+concurrency:
+  group: publish-ui
+  cancel-in-progress: false
 
 jobs:
   publish:
@@ -10,6 +21,8 @@ jobs:
     permissions:
       contents: read
       packages: write
+    outputs:
+      version: ${{ steps.pkg.outputs.version }}
     steps:
       - uses: actions/checkout@v4
 
@@ -17,29 +30,65 @@ jobs:
         with:
           node-version: 20
           registry-url: https://npm.pkg.github.com
+          scope: "@envirobyte"
+
+      - name: Sanity-check tag matches package.json
+        if: github.event_name == 'push'
+        run: |
+          set -e
+          PKG_VERSION=$(node -p "require('./package.json').version")
+          TAG_VERSION="${GITHUB_REF_NAME#v}"
+          if [ "$PKG_VERSION" != "$TAG_VERSION" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME (=$TAG_VERSION) does not match package.json version $PKG_VERSION"
+            exit 1
+          fi
 
       - run: npm ci
-      - run: npm run build
       - run: npm run typecheck
+      - run: npm run build
 
-      - run: npm publish
+      - name: Publish to GitHub Packages
+        run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Get published version
-        id: version
-        run: echo "version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
-
-      - name: Dispatch lockfile update to consumer repos
-        env:
-          DISPATCH_TOKEN: ${{ secrets.DISPATCH_TOKEN }}
-          VERSION: ${{ steps.version.outputs.version }}
+      - name: Resolve dispatched version
+        id: pkg
         run: |
-          for repo in "EnviroByte/eos_portal" "EnviroByte/datapivot-fe" "EnviroByte/rim-fe" "EnviroByte/atmosiq-fe"; do
-            curl -s -X POST \
-              -H "Authorization: token $DISPATCH_TOKEN" \
-              -H "Accept: application/vnd.github.v3+json" \
-              https://api.github.com/repos/$repo/dispatches \
-              -d "{\"event_type\":\"ui-package-updated\",\"client_payload\":{\"version\":\"$VERSION\"}}"
-            echo "Dispatched to $repo"
-          done
+          if [ -n "${{ inputs.version_override }}" ]; then
+            RAW="${{ inputs.version_override }}"
+          else
+            RAW=$(node -p "require('./package.json').version")
+          fi
+          CLEAN="${RAW#v}"
+          echo "version=${CLEAN}" >> "$GITHUB_OUTPUT"
+          echo "Dispatching version: ${CLEAN}"
+
+  notify-consumers:
+    needs: publish
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        repo:
+          - EnviroByte/rim-fe
+          - EnviroByte/atmosiq-fe
+          - EnviroByte/datapivot-fe
+          - EnviroByte/eos_portal
+    steps:
+      - name: Dispatch ui-package-updated to ${{ matrix.repo }}
+        env:
+          TOKEN: ${{ secrets.UI_CONSUMER_DISPATCH_TOKEN }}
+          VERSION: ${{ needs.publish.outputs.version }}
+          REPO: ${{ matrix.repo }}
+        run: |
+          set -euo pipefail
+          body=$(jq -nc --arg v "$VERSION" \
+            '{event_type:"ui-package-updated", client_payload:{version:$v}}')
+          echo "POST dispatches → ${REPO} with version ${VERSION}"
+          curl --fail-with-body -sS -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${TOKEN}" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/${REPO}/dispatches" \
+            -d "${body}"

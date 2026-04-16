@@ -47,6 +47,9 @@ export { Pagination } from "./components/generic/Pagination";
 export { FilterChips } from "./components/generic/FilterChips";
 export type { FilterChip } from "./components/generic/FilterChips";
 
+export { FilterBar } from "./components/generic/FilterBar";
+export type { FilterBarProps, FilterConfig, FilterOption } from "./components/generic/FilterBar";
+
 export { Spinner } from "./components/generic/Spinner";
 export type { SpinnerProps } from "./components/generic/Spinner";
 

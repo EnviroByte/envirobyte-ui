@@ -1,164 +1,241 @@
-# Publishing `@envirobyte/ui` and auto-propagating to consumer apps
+# Publishing `@envirobyte/ui` and auto-propagating to all consumer apps
 
-This doc is the single source of truth for how a change in this repo reaches
-every team member's laptop and every deployed app.
+> **Status**: Verified working end-to-end on 2026-04-16.
+> Tag `v0.2.2` → all 4 consumers on `main` in ~2 minutes.
 
-## The four consumers
+This is the **single source of truth** for how a change in this repo reaches
+every deployed app and every team member's laptop — fully automated.
+
+---
+
+## The 4 consumer apps
+
+All four are Next.js apps deployed on Vercel, auto-deploying from `main`:
 
 - `EnviroByte/rim-fe`
 - `EnviroByte/atmosiq-fe`
 - `EnviroByte/datapivot-fe`
 - `EnviroByte/eos_portal`
 
-All four are Next.js apps deployed on Vercel, with `main` auto-deploying to production.
+---
 
-## The pipeline (happy path)
+## The pipeline (happy path — this is what actually runs)
 
 ```
-┌───────────────────────────────────────────────────────────────────┐
-│  1. Someone merges a PR to `main` in envirobyte-ui                │
-│  2. They bump version in package.json + tag:                      │
-│        npm version patch   (or minor / major)                     │
-│        git push --follow-tags                                     │
-└───────────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────┐
+│ 1. Merge your PR into `main` in envirobyte-ui                       │
+│                                                                     │
+│ 2. Bump version + tag:                                              │
+│       npm version patch       (or minor / major)                    │
+│       git push origin main --follow-tags                            │
+└─────────────────────────────────────────────────────────────────────┘
                                 │
                                 ▼
-┌───────────────────────────────────────────────────────────────────┐
-│  .github/workflows/publish.yml (envirobyte-ui)                    │
-│  ───────────────────────────────────────────                      │
-│  • verifies tag matches package.json                              │
-│  • npm ci + typecheck + build                                     │
-│  • publishes to GitHub Packages (auth = built-in GITHUB_TOKEN)    │
-│  • dispatches `ui-package-updated` to all 4 consumers             │
-│    (auth = secret `UI_DISPATCH_TOKEN`, a fine-grained PAT)        │
-└───────────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────┐
+│ envirobyte-ui/.github/workflows/publish.yml                         │
+│ ─────────────────────────────────────────────                       │
+│  • sanity-checks tag vs package.json                                │
+│  • npm ci + typecheck + build                                       │
+│  • `npm publish` to GitHub Packages (auth: built-in GITHUB_TOKEN)   │
+│  • fan-out matrix job dispatches `ui-package-updated` to all 4      │
+│    consumer repos (auth: UI_CONSUMER_DISPATCH_TOKEN secret)         │
+└─────────────────────────────────────────────────────────────────────┘
                                 │
-              ┌─────────────────┼─────────────────┐
-              ▼                 ▼                 ▼    (x4)
-┌───────────────────────────────────────────────────────────────────┐
-│  .github/workflows/update-ui.yml (each consumer)                  │
-│  ───────────────────────────────────────────                      │
-│  • `npm install @envirobyte/ui@<new-version>`                     │
-│  • opens PR `chore/bump-envirobyte-ui` with the diff              │
-│  • enables auto-merge (squash)                                    │
-│  • CI runs. Green → auto-merges to main → Vercel redeploys.       │
-└───────────────────────────────────────────────────────────────────┘
+            ┌───────────────────┼───────────────────┐
+            ▼                   ▼                   ▼    (x4)
+┌─────────────────────────────────────────────────────────────────────┐
+│ each consumer/.github/workflows/update-ui.yml                       │
+│ ─────────────────────────────────────────────                       │
+│  • `npm install @envirobyte/ui@<new-version>` (refreshes lockfile)  │
+│  • opens PR on branch `chore/bump-envirobyte-ui`                    │
+│  • enables auto-merge (squash) via `gh pr merge --auto`             │
+└─────────────────────────────────────────────────────────────────────┘
                                 │
                                 ▼
-┌───────────────────────────────────────────────────────────────────┐
-│  Team member runs `git pull` on their local consumer repo         │
-│  .husky/post-merge detects package-lock.json changed → runs       │
-│  `npm install`. They're back in sync without thinking.            │
-└───────────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────┐
+│ each consumer/.github/workflows/ci.yml (on the bot PR)              │
+│ ─────────────────────────────────────────────                       │
+│  • npm ci + typecheck + build                                       │
+│  • GREEN → ruleset lets auto-merge squash the PR into `main`        │
+│  • Vercel sees new `main` → auto-deploys                            │
+└─────────────────────────────────────────────────────────────────────┘
+                                │
+                                ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│ Team member runs `git pull` on their local clone                    │
+│  • .husky/post-merge detects package-lock.json changed              │
+│  • runs `npm install` automatically                                 │
+│  • developer is back in sync without thinking about it              │
+└─────────────────────────────────────────────────────────────────────┘
 ```
 
-## The safety net
+**End-to-end verified timing**: ~2 minutes from `git push --follow-tags`
+to all 4 consumer `main` branches updated.
 
-If the dispatch fails for some reason (token rotated, GitHub outage, repo renamed),
-Dependabot in each consumer runs daily, spots the new version on GitHub Packages,
-and opens the same kind of PR. You will never be silently stuck on an old version.
+---
 
-## Releasing a new version of `@envirobyte/ui`
+## Releasing a new version
+
+On `main` of this repo, after your change is merged:
 
 ```bash
-# on main, after your change is merged
-npm version patch           # or: minor, major
+npm version patch       # or: minor, major
 git push origin main --follow-tags
 ```
 
-That's it. Expect:
+That's literally it. Monitor:
 
-- A new release of `@envirobyte/ui` on GitHub Packages within ~1 minute.
-- 4 bot PRs appear, one per consumer, within ~2 minutes.
-- Each PR auto-merges when its CI is green → Vercel deploys that app.
+- **envirobyte-ui** → Actions → `Publish @envirobyte/ui`
+- Each consumer → Actions → `Update @envirobyte/ui`
+- Each consumer → Pull Requests → bot PR auto-merges
 
-You can watch the whole thing in:
+---
 
-- This repo: **Actions → Publish @envirobyte/ui**
-- Each consumer: **Actions → Update @envirobyte/ui**
+## The safety net: Dependabot
 
-## Manual re-trigger (recovery)
+Each consumer has `.github/dependabot.yml` that runs daily and opens a PR
+for any new `@envirobyte/ui` version. This catches the (rare) case where
+the live `repository_dispatch` fails (token rotated, GitHub outage, etc).
 
-If consumers didn't get dispatched for any reason, run:
+**Requires**: `NPM_TOKEN` in the **Dependabot secrets** bucket (separate
+from Actions secrets!) at either org or repo level.
 
-- **envirobyte-ui**: Actions → Publish @envirobyte/ui → Run workflow → supply
-  `version_override` if needed (default is the current package.json version).
-- **or in each consumer individually**: Actions → Update @envirobyte/ui →
-  Run workflow → type the version (e.g. `0.3.1`).
+---
 
-## Required GitHub secrets
+## Required GitHub secrets — the actual mapping
 
-All the cross-repo secrets are already present at the org level or repo level.
-The table below lists what's used and where.
-
-### In `envirobyte-ui` (repo-level secret)
+### envirobyte-ui repo → Settings → Secrets → Actions
 
 | Secret | Used by | Notes |
 |---|---|---|
-| `GITHUB_TOKEN` | `publish.yml` (publishing step) | Automatic. Works because the repo lives in the `EnviroByte` org and the package scope is `@envirobyte` — the token has package:write by default in that org. |
-| `UI_CONSUMER_DISPATCH_TOKEN` | `publish.yml` (dispatch step) | Fine-grained PAT. Needs access to the 4 consumer repos and the **Pull requests**, **Contents**, **Actions** permissions listed below. |
+| `GITHUB_TOKEN` | `publish.yml` (publishing step) | Automatic. Works because envirobyte-ui lives in `EnviroByte` org and package scope is `@envirobyte` — `GITHUB_TOKEN` has `packages: write` in that org by default. |
+| `UI_CONSUMER_DISPATCH_TOKEN` | `publish.yml` (dispatch to consumers) | Fine-grained PAT with write access to the 4 consumer repos. |
 
-### In each consumer (EnviroByte org-level secrets, inherited by all consumers)
+### EnviroByte org → Settings → Secrets → Actions (inherited by all consumers)
 
 | Secret | Used by | Notes |
 |---|---|---|
-| `NPM_TOKEN` | `ci.yml`, `update-ui.yml`, `dependabot.yml`, Vercel builds | Read-only. Any PAT with `read:packages` on the `EnviroByte` org. |
-| `DISPATCH_TOKEN` | `update-ui.yml` (checkout + open PR + auto-merge) | Same fine-grained PAT as `UI_CONSUMER_DISPATCH_TOKEN`. Needs write access to each consumer repo. |
+| `DISPATCH_TOKEN` | each consumer's `update-ui.yml` (checkout, open PR, auto-merge) | Same fine-grained PAT value as `UI_CONSUMER_DISPATCH_TOKEN` above. Can be the same token; they're named differently because one is scoped to envirobyte-ui and one is inherited by consumers. |
+| `NPM_TOKEN` | Dependabot, local dev, Vercel | **Classic PAT** with `read:packages` scope. Fine-grained PATs do NOT work reliably with GitHub Packages npm registry — use classic. |
 
-> The two names (`UI_CONSUMER_DISPATCH_TOKEN` in envirobyte-ui and `DISPATCH_TOKEN`
-> at the org level) can hold the same PAT value. They're separate because one is
-> scoped to envirobyte-ui only (for dispatching out) and the other is inherited
-> by the consumers (for pushing in).
+### EnviroByte org → Settings → Secrets → **Dependabot** (SEPARATE bucket!)
 
-### Permissions required on the PAT behind `UI_CONSUMER_DISPATCH_TOKEN` / `DISPATCH_TOKEN`
+| Secret | Used by | Notes |
+|---|---|---|
+| `NPM_TOKEN` | `dependabot.yml` in each consumer | Same classic PAT as above. GitHub keeps Actions and Dependabot secrets in two different stores. Forgetting this causes silent Dependabot failures. |
 
-Resource owner: **EnviroByte**. Repository access: **select repositories** →
-`rim-fe`, `atmosiq-fe`, `datapivot-fe`, `eos_portal` (envirobyte-ui is not
-required since this PAT is only used to dispatch **out** of envirobyte-ui, and
-`GITHUB_TOKEN` handles publishing).
+### PAT permission details
 
-Repository permissions (all four must be set):
+**`UI_CONSUMER_DISPATCH_TOKEN` / `DISPATCH_TOKEN`** — fine-grained PAT.
 
-- **Contents**: Read and write
-- **Pull requests**: Read and write  ← **commonly forgotten; required for `peter-evans/create-pull-request` and `gh pr merge --auto`**
-- **Actions**: Read and write
-- **Metadata**: Read (auto-selected)
+- Resource owner: `EnviroByte`
+- Repository access: the 4 consumer repos (envirobyte-ui itself is not needed)
+- Repository permissions:
+  - Contents: **Read and write**
+  - Pull requests: **Read and write** ← commonly forgotten; required for `peter-evans/create-pull-request` and `gh pr merge --auto`
+  - Actions: **Read and write**
+  - Metadata: Read (auto)
 
-### Dependabot secrets (separate bucket!)
+**`NPM_TOKEN`** — classic PAT.
 
-Actions secrets and Dependabot secrets are two different stores in GitHub. Even
-if `NPM_TOKEN` is set at the org Actions level, Dependabot cannot see it. You
-must also set:
+- Scope: `read:packages` only
+- If org has SSO enforcement: click `Configure SSO` on the token after creation, authorize for `EnviroByte`
 
-- **EnviroByte org → Settings → Secrets and variables → Dependabot → `NPM_TOKEN`** (same value as the Actions version), **OR**
-- Each consumer → Settings → Secrets and variables → Dependabot → `NPM_TOKEN`.
+---
 
-Without this, Dependabot PRs silently fail to resolve `@envirobyte/ui`.
+## Per-consumer GitHub UI setup
 
-## One-time GitHub UI setup (per consumer repo)
+This is one-time setup for each of the 4 consumer repos. See
+[`docs/BRANCH_RULESET.md`](docs/BRANCH_RULESET.md) for exact screen-by-screen
+field values.
 
-1. Settings → General → Pull Requests → enable **Allow auto-merge**.
-2. Settings → Branches → Protect `main`:
-   - Require a pull request before merging (so bot PRs go through CI).
-   - Require status checks to pass before merging.
-   - Allow auto-merge (implicit if the repo-wide toggle is on).
+Summary:
 
-## One-time Vercel setup (per consumer)
+1. **Settings → General → Pull Requests → `Allow auto-merge`** → ON
+2. **Settings → Rules → Rulesets → New branch ruleset** → create `Protect main`
+   with the settings in `docs/BRANCH_RULESET.md`
+3. **Settings → Secrets and variables → Dependabot → `NPM_TOKEN`** (unless
+   org-level Dependabot secret already inherits)
 
-Each Vercel project → Settings → Environment Variables → add `NPM_TOKEN`
-(same fine-grained PAT, `read:packages` only) for **Production**, **Preview**,
-and **Development**. This lets Vercel resolve `@envirobyte/ui` during builds.
-(`.npmrc` in each repo already references `${NPM_TOKEN}`.)
+---
+
+## Vercel setup (per project)
+
+Each of the 4 Vercel projects:
+
+- Settings → Environment Variables → `NPM_TOKEN`
+- Value: the classic PAT (`read:packages`)
+- Environments: **Production**, **Preview**, **Development**
+
+The repo's `.npmrc` references `${NPM_TOKEN}` — no other Vercel config needed.
+
+---
 
 ## Team member laptop setup (one-time per person)
 
-1. Create a GitHub PAT with `read:packages` on the EnviroByte org. Put in shell rc:
-   ```bash
-   export NPM_TOKEN="ghp_..."
-   ```
-2. Clone any consumer repo and run `npm install`.
-   - Husky installs its git hooks (via the `prepare` script).
-   - `.npmrc` + `NPM_TOKEN` auth you against GitHub Packages.
-3. From this point on:
-   - `git pull` that changes the lockfile → hook runs `npm install` automatically.
-   - No manual token fumbling per repo.
+```bash
+# 1. Create a classic PAT at https://github.com/settings/tokens/new
+#    Scope: read:packages (only)
+#    Authorize SSO for EnviroByte if prompted
+#    Copy the ghp_... value
+
+# 2. Add to shell rc (persists across sessions)
+echo 'export NPM_TOKEN="ghp_your_classic_pat_here"' >> ~/.zshrc
+source ~/.zshrc
+
+# 3. Clone any consumer repo
+git clone git@github.com:EnviroByte/atmosiq-fe.git
+cd atmosiq-fe
+
+# 4. Install (this triggers husky via `prepare` script → installs git hooks)
+npm install
+```
+
+From here on, every `git pull` that changes `package-lock.json` automatically
+runs `npm install`. No manual re-auth per repo.
+
+---
+
+## Manual re-trigger (if automation failed)
+
+### Re-run the whole pipeline for an existing version
+
+```
+envirobyte-ui → Actions → Publish @envirobyte/ui → Run workflow
+  • version_override: 0.3.1    (optional; defaults to package.json)
+```
+
+### Re-run just one consumer
+
+```
+consumer repo → Actions → Update @envirobyte/ui → Run workflow
+  • version: 0.3.1    (required input)
+```
+
+---
+
+## How this was verified
+
+| Event | Timestamp | Result |
+|---|---|---|
+| `npm version patch` on envirobyte-ui | T+0s | tag `v0.2.2` created |
+| `git push --follow-tags` | T+0s | pushed to GitHub |
+| `Publish @envirobyte/ui` workflow | T+~10s | success; 0.2.2 on registry |
+| Dispatch to all 4 consumers | T+~30s | all 4 received |
+| Bot PR opened in each consumer | T+~60s | `chore: bump @envirobyte/ui to 0.2.2` |
+| CI passed on each bot PR | T+~120s | green |
+| Auto-merge squashed to `main` | T+~130s | all 4 on 0.2.2 |
+
+---
+
+## Troubleshooting
+
+| Symptom | Cause | Fix |
+|---|---|---|
+| Consumer CI fails `npm ci` with 403 on `@envirobyte/ui` | Package is private and consumer repo not linked | Make package public (repo settings), OR link each consumer under `Manage Actions access` on the package |
+| `update-ui.yml` fails `Missing: husky@X from lock file` | `package.json` changed but lockfile not refreshed | Run `npm install` locally, commit the lockfile |
+| `update-ui.yml` fails opening PR with 403 | PAT missing `Pull requests: write` | Edit the fine-grained PAT, add the permission |
+| Dependabot PRs never appear | `NPM_TOKEN` not in **Dependabot** secrets bucket | Add it at org or repo level under `Settings → Secrets → Dependabot` |
+| Vercel build fails on `@envirobyte/ui` | Vercel env var `NPM_TOKEN` missing | Add in project settings for all 3 environments |
+| Auto-merge doesn't fire after CI green | `Allow auto-merge` toggle off, OR ruleset requires approvals > 0 | Enable the toggle in `Settings → General`. Set `Required approvals = 0` in the ruleset |
+| CI fails `next lint: no such directory: /.../lint` | Next.js 16 removed the `next lint` command | Already handled; CI no longer runs lint. Follow-up: migrate to direct ESLint |

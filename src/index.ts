@@ -85,5 +85,23 @@ export type { SearchInputProps } from "./components/generic/SearchInput";
 export { PageHeading } from "./components/generic/PageHeading";
 export type { PageHeadingProps } from "./components/generic/PageHeading";
 
+export { PageHeader } from "./components/generic/PageHeader";
+export type { PageHeaderProps } from "./components/generic/PageHeader";
+
+export { StatCard } from "./components/generic/StatCard";
+export type { StatCardProps, StatCardAccent } from "./components/generic/StatCard";
+
+export { Toolbar } from "./components/generic/Toolbar";
+export type { ToolbarProps } from "./components/generic/Toolbar";
+
+export { Breadcrumb } from "./components/generic/Breadcrumb";
+export type { BreadcrumbProps, BreadcrumbItem } from "./components/generic/Breadcrumb";
+
+export { SidePanel } from "./components/generic/SidePanel";
+export type { SidePanelProps } from "./components/generic/SidePanel";
+
+export { ConfirmInlineAction } from "./components/generic/ConfirmInlineAction";
+export type { ConfirmInlineActionProps } from "./components/generic/ConfirmInlineAction";
+
 export { Footer } from "./components/generic/Footer";
 export type { FooterProps, FooterLink } from "./components/generic/Footer";

@@ -61,6 +61,9 @@ export type { PillButtonProps } from "./components/generic/PillButton";
 export { FilterSelect } from "./components/generic/FilterSelect";
 export type { FilterSelectProps, FilterSelectOption } from "./components/generic/FilterSelect";
 
+export { FilterSidebarPanel, filterPanelSectionLabelClass } from "./components/generic/FilterSidebarPanel";
+export type { FilterSidebarPanelProps } from "./components/generic/FilterSidebarPanel";
+
 export { ErrorState } from "./components/generic/ErrorState";
 export type { ErrorStateProps } from "./components/generic/ErrorState";
 

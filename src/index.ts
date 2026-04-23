@@ -45,9 +45,6 @@ export type { DropdownMenuProps, DropdownMenuItem } from "./components/generic/D
 export { EmptyState } from "./components/generic/EmptyState";
 export type { EmptyStateProps } from "./components/generic/EmptyState";
 
-export { FilterSidebarPanel, filterPanelSectionLabelClass } from "./components/generic/FilterSidebarPanel";
-export type { FilterSidebarPanelProps } from "./components/generic/FilterSidebarPanel";
-
 export { ErrorState } from "./components/generic/ErrorState";
 export type { ErrorStateProps } from "./components/generic/ErrorState";
 
@@ -92,7 +89,7 @@ export type { SearchInputProps } from "./components/generic/SearchInput";
 export { SegmentedControl } from "./components/generic/SegmentedControl";
 export type { SegmentedOption } from "./components/generic/SegmentedControl";
 
-export { SidePanel } from "./components/generic/SidePanel";
+export { SidePanel, sidePanelSectionLabelClass } from "./components/generic/SidePanel";
 export type { SidePanelProps } from "./components/generic/SidePanel";
 
 export { Spinner } from "./components/generic/Spinner";

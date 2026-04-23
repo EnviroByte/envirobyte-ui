@@ -1,44 +1,111 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { SidePanel } from "./SidePanel";
+import { useState, type CSSProperties } from "react";
+import { SidePanel, sidePanelSectionLabelClass } from "./SidePanel";
 
 const meta: Meta<typeof SidePanel> = {
   title: "Generic/SidePanel",
   component: SidePanel,
+  decorators: [
+    (Story) => (
+      <div
+        style={
+          {
+            "--color-primary": "#111625",
+            "--color-primary-50": "#e8eaef",
+            "--app-header-h": "60px",
+          } as CSSProperties
+        }
+        className="min-h-[680px] bg-gray-100 p-6"
+      >
+        <div className="mx-auto flex max-w-[1200px] justify-end">
+          <Story />
+        </div>
+      </div>
+    ),
+  ],
 };
 
 export default meta;
 type Story = StoryObj<typeof SidePanel>;
 
-export const Default: Story = {
-  render: () => {
-    const [open, setOpen] = useState(true);
-    return (
-      <div className="flex h-[400px] bg-gray-50 rounded-xl overflow-hidden ring-1 ring-gray-200">
-        <div className="flex-1 p-4 text-sm text-gray-500">
-          Main content area
+function SampleFilterContent() {
+  const [view, setView] = useState("Monthly");
+
+  return (
+    <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-2">
+        <span className={sidePanelSectionLabelClass}>Province</span>
+        <div className="flex flex-col gap-1.5">
+          {["Alberta", "British Columbia", "Saskatchewan"].map((option) => {
+            const selected = option === "Alberta";
+            return (
+              <label
+                key={option}
+                className={[
+                  "relative flex w-full cursor-pointer items-center gap-3 rounded-md border px-3 py-2.5 text-left text-sm transition-colors",
+                  selected
+                    ? "border border-gray-100 border-l-[3px] border-l-[var(--color-primary)] bg-[var(--color-primary-50)] font-medium text-[var(--color-primary)]"
+                    : "border border-gray-100 bg-white text-gray-600 hover:bg-gray-50",
+                ].join(" ")}
+              >
+                <input type="radio" name="province" className="sr-only" readOnly checked={selected} />
+                <span className="min-w-0 flex-1 leading-snug">{option}</span>
+              </label>
+            );
+          })}
         </div>
-        <SidePanel open={open}>
-          <div className="p-3 flex items-center justify-between">
-            {open && <span className="text-sm font-semibold">Filters</span>}
-            <button
-              type="button"
-              onClick={() => setOpen(!open)}
-              className="p-1.5 rounded hover:bg-gray-100"
-            >
-              {open ? (
-                <ChevronRight className="h-4 w-4" />
-              ) : (
-                <ChevronLeft className="h-4 w-4" />
-              )}
-            </button>
-          </div>
-          {open && (
-            <div className="px-3 text-sm text-gray-500">Panel content</div>
-          )}
-        </SidePanel>
       </div>
-    );
-  },
+
+      <div className="-mx-4 my-1 border-t border-gray-200" />
+
+      <div className="flex flex-col gap-2">
+        <span className={sidePanelSectionLabelClass}>View Options</span>
+        <div className="flex flex-col gap-1.5">
+          {["Monthly", "Quarterly", "Annual"].map((option) => {
+            const selected = option === view;
+            return (
+              <button
+                key={option}
+                type="button"
+                onClick={() => setView(option)}
+                className={[
+                  "relative w-full rounded-md border px-3 py-2.5 text-left text-sm transition-colors",
+                  selected
+                    ? "border border-gray-100 border-l-[3px] border-l-[var(--color-primary)] bg-[var(--color-primary-50)] font-medium text-[var(--color-primary)]"
+                    : "border border-gray-100 bg-white text-gray-600 hover:bg-gray-50",
+                ].join(" ")}
+              >
+                {option}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="-mx-4 my-1 border-t border-gray-200" />
+
+      <div className="flex flex-col gap-2">
+        <span className={sidePanelSectionLabelClass}>Category</span>
+        <select className="w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-[var(--color-primary)] focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)]">
+          <option>All Categories</option>
+          <option>Stack</option>
+          <option>Flare</option>
+          <option>Vent</option>
+        </select>
+      </div>
+    </div>
+  );
+}
+
+export const Default: Story = {
+  render: () => (
+    <SidePanel
+      title="Filters"
+      storageKeyPrefix="storybook-side-panel"
+      topOffsetCssVar="--app-header-h"
+      className="lg:!static lg:!h-[620px] lg:rounded-xl"
+    >
+      <SampleFilterContent />
+    </SidePanel>
+  ),
 };

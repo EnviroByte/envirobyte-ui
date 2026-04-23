@@ -114,3 +114,6 @@ export type { ActionBarProps } from "./components/generic/ActionBar";
 
 export { Navbar } from "./components/generic/Navbar";
 export type { NavbarProps, NavbarUser, NavbarCompany, NavbarApp } from "./components/generic/Navbar";
+
+export { SelectCompanyPage } from "./components/generic/SelectCompanyPage";
+export type { SelectCompanyPageProps, SelectableCompany } from "./components/generic/SelectCompanyPage";

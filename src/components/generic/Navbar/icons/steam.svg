@@ -1,0 +1,10 @@
+<svg fill="currentColor" id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 38 38"><g id="Layer_1-2" data-name="Layer 1">
+    <g>
+      <path d="m35,38H3c-1.65,0-3-1.35-3-3V13h2v22c0,.55.45,1,1,1h32c.55,0,1-.45,1-1V13h2v22c0,1.65-1.35,3-3,3Z"/>
+      <path d="m38,14H0V3C0,1.35,1.35,0,3,0h32c1.65,0,3,1.35,3,3v11ZM2,12h34V3c0-.55-.45-1-1-1H3c-.55,0-1,.45-1,1v9Z"/>
+    </g>
+    <circle cx="6.88" cy="7.04" r="1.88"/>
+    <circle cx="12.21" cy="7.04" r="1.88"/>
+    <circle cx="17.12" cy="7.04" r="1.88"/>
+  </g>
+</svg>

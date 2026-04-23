@@ -89,7 +89,7 @@ export type { SearchInputProps } from "./components/generic/SearchInput";
 export { SegmentedControl } from "./components/generic/SegmentedControl";
 export type { SegmentedOption } from "./components/generic/SegmentedControl";
 
-export { SidePanel } from "./components/generic/SidePanel";
+export { SidePanel, sidePanelSectionLabelClass } from "./components/generic/SidePanel";
 export type { SidePanelProps } from "./components/generic/SidePanel";
 
 export { Spinner } from "./components/generic/Spinner";
@@ -111,3 +111,6 @@ export { Tooltip } from "./components/generic/Tooltip";
 
 export { ActionBar } from "./components/generic/ActionBar";
 export type { ActionBarProps } from "./components/generic/ActionBar";
+
+export { Navbar } from "./components/generic/Navbar";
+export type { NavbarProps, NavbarUser, NavbarCompany, NavbarApp } from "./components/generic/Navbar";

@@ -97,35 +97,41 @@ export default nextConfig;
 
 ## Publishing a New Version
 
-Publishing is automated via GitHub Actions. To release a new version:
-
-1. Bump the version:
-
-```bash
-npm version patch   # 0.1.0 → 0.1.1
-# or
-npm version minor   # 0.1.0 → 0.2.0
-# or
-npm version major   # 0.1.0 → 1.0.0
-```
-
-2. Push the tag:
+Publishing AND distribution to all 4 consumer apps is fully automated.
+One command, ~2 minutes, and every app is running the new version.
 
 ```bash
-git push origin main --tags
+npm version patch   # or: minor / major
+git push origin main --follow-tags
 ```
 
-The `publish.yml` workflow will automatically build, typecheck, and publish to GitHub Packages.
+What happens:
 
-### Manual Publishing
+1. `publish.yml` builds, typechecks, and publishes to GitHub Packages.
+2. It dispatches `ui-package-updated` to `rim-fe`, `atmosiq-fe`,
+   `datapivot-fe`, and `eos_portal`.
+3. Each consumer opens a bot PR (`chore: bump @envirobyte/ui to X.Y.Z`),
+   CI runs, green → auto-merges to `main` → Vercel redeploys.
+4. Team laptops pick up the lockfile change via a husky `post-merge`
+   hook that runs `npm install` automatically on `git pull`.
 
-If needed, you can publish manually:
+**Deeper docs:**
+- [`PUBLISHING.md`](./PUBLISHING.md) — full pipeline, secrets, troubleshooting
+- [`docs/BRANCH_RULESET.md`](./docs/BRANCH_RULESET.md) — per-consumer ruleset config (field-by-field)
+
+### Manual Publishing (emergency fallback only)
+
+If GitHub Actions is down:
 
 ```bash
 export NODE_AUTH_TOKEN=ghp_your_token_here
 npm run build
 npm publish
 ```
+
+Consumers won't auto-update in this case — either manually trigger each
+`Update @envirobyte/ui` workflow with the version input, or wait for the
+daily Dependabot run.
 
 ---
 
@@ -761,4 +767,7 @@ Edits to `envirobyte-ui/src/` will hot-reload in the product app.
 | Workflow | Trigger | Steps |
 |----------|---------|-------|
 | **CI** (`ci.yml`) | Push to `main`, PRs to `main` | `npm ci` → `typecheck` → `build` |
-| **Publish** (`publish.yml`) | Push tags `v*` | `npm ci` → `build` → `typecheck` → `npm publish` to GitHub Packages |
+| **Publish** (`publish.yml`) | Push tags `v*` | `npm ci` → `build` → `typecheck` → `npm publish` → dispatch to 4 consumer repos |
+
+For the full end-to-end pipeline (including what happens downstream in each
+consumer), see [`PUBLISHING.md`](./PUBLISHING.md).

@@ -36,9 +36,15 @@ const defaultSelectStyles: StylesConfig<FilterOption, true> = {
     borderColor: "#e5e7eb",
     minHeight: "42px",
     boxShadow: "none",
+    outline: "none",
     "&:hover": {
       borderColor: "#02364B",
     },
+  }),
+  input: (base) => ({
+    ...base,
+    outline: "none",
+    boxShadow: "none",
   }),
   placeholder: (base) => ({
     ...base,

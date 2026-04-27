@@ -109,8 +109,14 @@ export type { ToolbarProps } from "./components/generic/Toolbar";
 
 export { Tooltip } from "./components/generic/Tooltip";
 
+export { ActionsDropdown } from "./components/generic/ActionsDropdown";
+export type { ActionsDropdownProps, ActionItem } from "./components/generic/ActionsDropdown";
+
 export { ActionBar } from "./components/generic/ActionBar";
 export type { ActionBarProps } from "./components/generic/ActionBar";
+
+export { TableView } from "./components/generic/TableView";
+export type { TableViewProps, TableViewColumn, SortDirection, SortState } from "./components/generic/TableView";
 
 export { Navbar } from "./components/generic/Navbar";
 export type { NavbarProps, NavbarUser, NavbarCompany, NavbarApp } from "./components/generic/Navbar";

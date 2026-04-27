@@ -13,16 +13,19 @@ export interface FilterOption {
 export interface FilterConfig {
   key: string;
   label: string;
-  options: FilterOption[];
+  type?: "select" | "text";
+  options?: FilterOption[];
   isLoading?: boolean;
   disabled?: boolean;
   placeholder?: string;
 }
 
+export type FilterValues = Record<string, FilterOption[] | string>;
+
 export interface FilterBarProps {
   filters: FilterConfig[];
-  values: Record<string, FilterOption[]>;
-  onChange: (next: Record<string, FilterOption[]>) => void;
+  values: FilterValues;
+  onChange: (next: FilterValues) => void;
   onClearAll?: () => void;
   columns?: { base?: number; md?: number; lg?: number };
   showChips?: boolean;
@@ -123,9 +126,12 @@ export function FilterBar({
   const chips: FilterChip[] = useMemo(() => {
     const result: FilterChip[] = [];
     Object.entries(values).forEach(([key, selected]) => {
-      if (!selected || selected.length === 0) return;
+      if (!selected) return;
       const cfg = configByKey[key];
-      selected.forEach((opt, index) => {
+      if (cfg?.type === "text" || typeof selected === "string") return;
+      const opts = selected as FilterOption[];
+      if (opts.length === 0) return;
+      opts.forEach((opt, index) => {
         result.push({
           id: `${key}__${index}`,
           label: `${cfg?.label ?? key}: ${opt.label}`,
@@ -136,14 +142,19 @@ export function FilterBar({
     return result;
   }, [values, configByKey]);
 
-  const handleFieldChange = (key: string, next: readonly FilterOption[] | null) => {
+  const handleSelectChange = (key: string, next: readonly FilterOption[] | null) => {
     onChange({ ...values, [key]: next ? [...next] : [] });
+  };
+
+  const handleTextChange = (key: string, next: string) => {
+    onChange({ ...values, [key]: next });
   };
 
   const handleRemoveChip = (chip: FilterChip) => {
     const [key, indexStr] = chip.id.split("__");
     const index = parseInt(indexStr, 10);
-    const current = values[key] || [];
+    const current = values[key];
+    if (!Array.isArray(current)) return;
     const nextForKey = current.filter((_, i) => i !== index);
     onChange({ ...values, [key]: nextForKey });
   };
@@ -153,9 +164,9 @@ export function FilterBar({
       onClearAll();
       return;
     }
-    const cleared: Record<string, FilterOption[]> = {};
-    Object.keys(values).forEach((key) => {
-      cleared[key] = [];
+    const cleared: FilterValues = {};
+    filters.forEach((f) => {
+      cleared[f.key] = f.type === "text" ? "" : [];
     });
     onChange(cleared);
   };
@@ -168,20 +179,31 @@ export function FilterBar({
             <label className="block text-sm font-medium text-gray-700 mb-2">
               {filter.label}
             </label>
-            <Select<FilterOption, true>
-              options={filter.options}
-              value={values[filter.key] || []}
-              onChange={(next) => handleFieldChange(filter.key, next)}
-              placeholder={filter.placeholder ?? "Select"}
-              isClearable
-              isMulti
-              isSearchable
-              controlShouldRenderValue={false}
-              styles={defaultSelectStyles}
-              isLoading={filter.isLoading}
-              isDisabled={filter.disabled}
-              instanceId={`filterbar-${filter.key}`}
-            />
+            {filter.type === "text" ? (
+              <input
+                type="text"
+                value={(values[filter.key] as string) ?? ""}
+                onChange={(e) => handleTextChange(filter.key, e.target.value)}
+                placeholder={filter.placeholder ?? `Search ${filter.label.toLowerCase()}`}
+                disabled={filter.disabled}
+                className="w-full h-[42px] rounded-md border border-gray-200 px-3 text-sm text-gray-900 placeholder:text-gray-400 outline-none hover:border-[#02364B] focus:border-[#02364B] transition-colors disabled:bg-gray-100 disabled:cursor-not-allowed"
+              />
+            ) : (
+              <Select<FilterOption, true>
+                options={filter.options ?? []}
+                value={(values[filter.key] as FilterOption[]) || []}
+                onChange={(next) => handleSelectChange(filter.key, next)}
+                placeholder={filter.placeholder ?? "Select"}
+                isClearable
+                isMulti
+                isSearchable
+                controlShouldRenderValue={false}
+                styles={defaultSelectStyles}
+                isLoading={filter.isLoading}
+                isDisabled={filter.disabled}
+                instanceId={`filterbar-${filter.key}`}
+              />
+            )}
           </div>
         ))}
       </div>

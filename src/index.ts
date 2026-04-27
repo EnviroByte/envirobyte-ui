@@ -49,7 +49,7 @@ export { ErrorState } from "./components/generic/ErrorState";
 export type { ErrorStateProps } from "./components/generic/ErrorState";
 
 export { FilterBar } from "./components/generic/FilterBar";
-export type { FilterBarProps, FilterConfig, FilterOption } from "./components/generic/FilterBar";
+export type { FilterBarProps, FilterConfig, FilterOption, FilterValues } from "./components/generic/FilterBar";
 
 export { FilterChips } from "./components/generic/FilterChips";
 export type { FilterChip } from "./components/generic/FilterChips";

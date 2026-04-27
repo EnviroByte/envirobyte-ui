@@ -59,6 +59,8 @@ export interface TableViewProps<T> {
   sort?: SortState;
   /** Called when the user clicks a sortable column header. */
   onSort?: (sort: SortState) => void;
+  /** Called when a row is clicked. Enables cursor-pointer on rows. */
+  onRowClick?: (row: T) => void;
   className?: string;
 }
 
@@ -92,6 +94,7 @@ export function TableView<T,>({
   onPageChange,
   sort: controlledSort,
   onSort,
+  onRowClick,
   className,
 }: TableViewProps<T>) {
   const isControlled = controlledSort !== undefined;
@@ -220,7 +223,11 @@ export function TableView<T,>({
               sortedData.map((row) => (
                 <tr
                   key={rowKey(row)}
-                  className="border-b border-gray-100 hover:bg-gray-50/50 transition-colors group"
+                  onClick={onRowClick ? () => onRowClick(row) : undefined}
+                  className={cn(
+                    "border-b border-gray-100 hover:bg-gray-50/50 transition-colors group",
+                    onRowClick && "cursor-pointer",
+                  )}
                 >
                   {columns.map((col) => (
                     <td
@@ -240,6 +247,7 @@ export function TableView<T,>({
 
                   {hasActions && actionItems && (
                     <td
+                      onClick={(e) => e.stopPropagation()}
                       className={cn(
                         "py-3 px-4 sticky right-0 bg-white border-l border-gray-100 group-hover:bg-gray-50",
                         ACTIONS_W,

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, type ReactNode } from "react";
-import { ArrowUp, ArrowDown, ArrowUpDown } from "lucide-react";
+import { ArrowUp, ArrowDown } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import { EmptyState } from "../EmptyState";
 import { ErrorState } from "../ErrorState";
@@ -105,17 +105,12 @@ export function TableView<T,>({
   const hasStickyRight = columns.some((c) => c.stickyRight);
   const totalCols = columns.length + (hasActions ? 1 : 0);
 
-  function toggleSort(key: string) {
-    let next: SortState;
-    if (activeSort?.key === key) {
-      if (activeSort.direction === "asc") {
-        next = { key, direction: "desc" };
-      } else {
-        next = null;
-      }
-    } else {
-      next = { key, direction: "asc" };
-    }
+  function setSort(key: string, direction: SortDirection) {
+    // Clicking the already-active direction clears the sort
+    const next: SortState =
+      activeSort?.key === key && activeSort.direction === direction
+        ? null
+        : { key, direction };
 
     if (isControlled) {
       onSort?.(next);
@@ -172,22 +167,37 @@ export function TableView<T,>({
                     )}
                   >
                     {col.sortable ? (
-                      <button
-                        type="button"
-                        onClick={() => toggleSort(col.key)}
-                        className="group/sort inline-flex items-center gap-1.5 hover:text-gray-700 transition-colors"
-                      >
+                      <span className="inline-flex items-center gap-2">
                         <span>{col.header}</span>
-                        {isSorted ? (
-                          activeSort?.direction === "asc" ? (
-                            <ArrowUp className="h-3.5 w-3.5 text-primary" />
-                          ) : (
-                            <ArrowDown className="h-3.5 w-3.5 text-primary" />
-                          )
-                        ) : (
-                          <ArrowUpDown className="h-3.5 w-3.5 text-gray-300 group-hover/sort:text-gray-400 transition-colors" />
-                        )}
-                      </button>
+                        <span className="inline-flex items-center gap-0.5">
+                          <button
+                            type="button"
+                            title="Sort ascending"
+                            onClick={() => setSort(col.key, "asc")}
+                            className={cn(
+                              "rounded p-0.5 transition-colors",
+                              isSorted && activeSort?.direction === "asc"
+                                ? "text-primary bg-primary/10"
+                                : "text-gray-300 hover:text-gray-600 hover:bg-gray-100",
+                            )}
+                          >
+                            <ArrowUp className="h-4 w-4" />
+                          </button>
+                          <button
+                            type="button"
+                            title="Sort descending"
+                            onClick={() => setSort(col.key, "desc")}
+                            className={cn(
+                              "rounded p-0.5 transition-colors",
+                              isSorted && activeSort?.direction === "desc"
+                                ? "text-primary bg-primary/10"
+                                : "text-gray-300 hover:text-gray-600 hover:bg-gray-100",
+                            )}
+                          >
+                            <ArrowDown className="h-4 w-4" />
+                          </button>
+                        </span>
+                      </span>
                     ) : (
                       col.header
                     )}

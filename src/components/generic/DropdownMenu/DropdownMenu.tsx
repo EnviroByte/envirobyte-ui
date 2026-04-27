@@ -1,6 +1,6 @@
 "use client";
 
-import { Menu, MenuButton, MenuItems, MenuItem } from "@headlessui/react";
+import { Menu, MenuButton, MenuItems, MenuItem, Portal } from "@headlessui/react";
 import { ChevronDown } from "lucide-react";
 import type { ReactNode } from "react";
 import { cn } from "../../../lib/utils";
@@ -47,39 +47,41 @@ export function DropdownMenu({
         )}
       </MenuButton>
 
-      <MenuItems
-        transition
-        className={cn(
-          "absolute z-50 mt-2 w-56 origin-top rounded-lg bg-white shadow-lg ring-1 ring-black/5",
-          "focus:outline-none",
-          "transition-all duration-150 data-[closed]:scale-95 data-[closed]:opacity-0",
-          align === "right" ? "right-0" : "left-0"
-        )}
-      >
-        <div className="py-1">
-          {items.map((item) => (
-            <MenuItem key={item.value} disabled={item.disabled}>
-              <button
-                type="button"
-                onClick={() => onSelect(item.value)}
-                className={cn(
-                  "group flex w-full items-center gap-3 px-4 py-2.5 text-sm transition-colors",
-                  "data-[focus]:bg-gray-50",
-                  item.danger
-                    ? "text-red-600 data-[focus]:text-red-700"
-                    : "text-gray-700 data-[focus]:text-gray-900",
-                  item.disabled && "opacity-50 cursor-not-allowed"
-                )}
-              >
-                {item.icon && (
-                  <span className="h-4 w-4 shrink-0">{item.icon}</span>
-                )}
-                {item.label}
-              </button>
-            </MenuItem>
-          ))}
-        </div>
-      </MenuItems>
+      <Portal>
+        <MenuItems
+          transition
+          anchor={{ to: align === "right" ? "bottom end" : "bottom start", gap: 4 }}
+          className={cn(
+            "z-[200] w-56 rounded-lg bg-white shadow-lg ring-1 ring-black/5",
+            "focus:outline-none",
+            "transition-all duration-150 data-[closed]:scale-95 data-[closed]:opacity-0"
+          )}
+        >
+          <div className="py-1">
+            {items.map((item) => (
+              <MenuItem key={item.value} disabled={item.disabled}>
+                <button
+                  type="button"
+                  onClick={() => onSelect(item.value)}
+                  className={cn(
+                    "group flex w-full items-center gap-3 px-4 py-2.5 text-sm transition-colors",
+                    "data-[focus]:bg-gray-50",
+                    item.danger
+                      ? "text-red-600 data-[focus]:text-red-700"
+                      : "text-gray-700 data-[focus]:text-gray-900",
+                    item.disabled && "opacity-50 cursor-not-allowed"
+                  )}
+                >
+                  {item.icon && (
+                    <span className="h-4 w-4 shrink-0">{item.icon}</span>
+                  )}
+                  {item.label}
+                </button>
+              </MenuItem>
+            ))}
+          </div>
+        </MenuItems>
+      </Portal>
     </Menu>
   );
 }

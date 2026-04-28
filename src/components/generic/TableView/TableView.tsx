@@ -140,6 +140,10 @@ export function TableView<T,>({
     return <ErrorState title={errorTitle} description="Please try again later." />;
   }
 
+  if (sortedData.length === 0) {
+    return <EmptyState title={emptyTitle} description={emptyDescription} />;
+  }
+
   return (
     <>
       <div className={cn("w-full overflow-x-auto", className)}>
@@ -220,17 +224,7 @@ export function TableView<T,>({
           </thead>
 
           <tbody>
-            {sortedData.length === 0 ? (
-              <tr>
-                <td
-                  colSpan={totalCols}
-                  className="py-8 text-center text-sm text-gray-500"
-                >
-                  <EmptyState title={emptyTitle} description={emptyDescription} />
-                </td>
-              </tr>
-            ) : (
-              sortedData.map((row) => (
+            {sortedData.map((row) => (
                 <tr
                   key={rowKey(row)}
                   onClick={onRowClick ? () => onRowClick(row) : undefined}
@@ -270,8 +264,7 @@ export function TableView<T,>({
                     </td>
                   )}
                 </tr>
-              ))
-            )}
+            ))}
           </tbody>
         </table>
       </div>

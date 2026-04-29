@@ -14,9 +14,6 @@ import { ActionsDropdown, type ActionItem } from "../ActionsDropdown";
 const TH_BASE =
   "py-3 px-4 text-xs font-bold text-gray-500 uppercase tracking-wider border-t border-b border-gray-100";
 
-const ACTIONS_W = "w-20";
-const ACTIONS_RIGHT_OFFSET = "right-20";
-
 // ── Types ─────────────────────────────────────────────────────────────────────
 
 export type SortDirection = "asc" | "desc";
@@ -49,6 +46,8 @@ export interface TableViewProps<T> {
   actionItems?: (row: T) => ActionItem[];
   /** Called when an action menu item is selected. */
   onAction?: (value: string, row: T) => void;
+  /** Optional content rendered inside the Actions cell, before the dropdown (e.g. status icons). */
+  rowAccessory?: (row: T) => ReactNode;
   totalPages?: number;
   currentPage?: number;
   onPageChange?: (page: number) => void;
@@ -89,6 +88,7 @@ export function TableView<T,>({
   rowKey,
   actionItems,
   onAction,
+  rowAccessory,
   totalPages,
   currentPage,
   onPageChange,
@@ -102,6 +102,9 @@ export function TableView<T,>({
   const activeSort = isControlled ? controlledSort : internalSort;
 
   const hasActions = !!actionItems;
+  const hasAccessory = !!rowAccessory;
+  const actionsW = hasAccessory ? "w-28" : "w-20";
+  const actionsRightOffset = hasAccessory ? "right-28" : "right-20";
   const hasStickyRight = columns.some((c) => c.stickyRight);
   const totalCols = columns.length + (hasActions ? 1 : 0);
 
@@ -164,7 +167,7 @@ export function TableView<T,>({
                       isLast && !hasActions && !col.stickyRight && "rounded-tr-lg",
                       col.stickyRight && [
                         "sticky z-[3] bg-gray-50 border-l border-gray-100",
-                        hasActions ? ACTIONS_RIGHT_OFFSET : "right-0",
+                        hasActions ? actionsRightOffset : "right-0",
                         !hasActions && "rounded-tr-lg",
                       ],
                       col.headerClassName,
@@ -214,7 +217,7 @@ export function TableView<T,>({
                   className={cn(
                     TH_BASE,
                     "rounded-tr-lg sticky right-0 z-[3] bg-gray-50 border-l border-gray-100",
-                    ACTIONS_W,
+                    actionsW,
                   )}
                 >
                   Actions
@@ -240,7 +243,7 @@ export function TableView<T,>({
                         "py-3 px-4",
                         col.stickyRight && [
                           "sticky bg-white border-l border-gray-100 group-hover:bg-gray-50",
-                          hasActions ? ACTIONS_RIGHT_OFFSET : "right-0",
+                          hasActions ? actionsRightOffset : "right-0",
                         ],
                         col.cellClassName,
                       )}
@@ -254,13 +257,16 @@ export function TableView<T,>({
                       onClick={(e) => e.stopPropagation()}
                       className={cn(
                         "py-3 px-4 sticky right-0 bg-white border-l border-gray-100 group-hover:bg-gray-50",
-                        ACTIONS_W,
+                        actionsW,
                       )}
                     >
-                      <ActionsDropdown
-                        items={actionItems(row)}
-                        onSelect={(value) => onAction?.(value, row)}
-                      />
+                      <div className="flex items-center gap-2">
+                        <ActionsDropdown
+                          items={actionItems(row)}
+                          onSelect={(value) => onAction?.(value, row)}
+                        />
+                        {hasAccessory && rowAccessory && rowAccessory(row)}
+                      </div>
                     </td>
                   )}
                 </tr>

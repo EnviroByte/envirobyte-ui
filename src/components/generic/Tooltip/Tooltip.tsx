@@ -33,7 +33,7 @@ export function Tooltip({
     <div className="relative group inline-block">
       {children}
       <div
-        className={`absolute ${verticalClasses} ${alignClasses} z-50 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-150 w-56`}
+        className={`absolute ${verticalClasses} ${alignClasses} z-50 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-150 w-max`}
       >
         <div className="bg-gray-800 text-white text-xs leading-relaxed font-medium px-3 py-2 rounded-md shadow-lg">
           {content}

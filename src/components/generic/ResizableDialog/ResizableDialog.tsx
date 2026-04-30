@@ -26,6 +26,11 @@ export interface ResizableDialogProps {
   maxHeight?: number;
   className?: string;
   footer?: ReactNode;
+  /**
+   * Body scroll/clipping: `"auto"` (default) scrolls long content but clips overflowing popovers;
+   * `"visible"` allows dropdowns/portaled-like overlays to extend outside the body (use when content is short).
+   */
+  bodyOverflow?: "auto" | "visible";
 }
 
 type ResizeEdge = "e" | "s" | "se" | "sw" | "w" | "n" | "ne" | "nw";
@@ -58,6 +63,7 @@ export function ResizableDialog({
   maxHeight,
   className,
   footer,
+  bodyOverflow = "auto",
 }: ResizableDialogProps) {
   const resolvedMaxW = maxWidth  ?? (typeof window !== "undefined" ? window.innerWidth  * 0.92 : 1200);
   const resolvedMaxH = maxHeight ?? (typeof window !== "undefined" ? window.innerHeight * 0.92 : 900);
@@ -221,13 +227,18 @@ export function ResizableDialog({
           </div>
 
           {/* ── Scrollable content ── */}
-          <div className="flex-1 overflow-y-auto px-5 py-4 min-h-0">
+          <div
+            className={cn(
+              "flex-1 px-5 py-4 min-h-0",
+              bodyOverflow === "visible" ? "overflow-visible" : "overflow-y-auto",
+            )}
+          >
             {children}
           </div>
 
           {/* ── Optional footer ── */}
           {footer && (
-            <div className="shrink-0 px-5 py-4 border-t border-slate-100 bg-white rounded-b-xl">
+            <div className="relative z-20 shrink-0 px-5 py-4 border-t border-slate-100 bg-white rounded-b-xl">
               {footer}
             </div>
           )}

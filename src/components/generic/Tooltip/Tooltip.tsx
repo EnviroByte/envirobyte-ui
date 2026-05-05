@@ -1,6 +1,15 @@
 "use client";
 
-import type { ReactNode } from "react";
+import {
+  type CSSProperties,
+  type ReactNode,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
+import { createPortal } from "react-dom";
 
 interface TooltipProps {
   content: string;
@@ -9,37 +18,189 @@ interface TooltipProps {
   align?: "center" | "end";
 }
 
+function computeBubblePosition(
+  trigger: HTMLElement,
+  position: "top" | "bottom",
+  align: "center" | "end",
+): Pick<CSSProperties, "top" | "left" | "transform"> {
+  const r = trigger.getBoundingClientRect();
+  const gap = 6;
+
+  let left: number;
+  let top: number;
+  let transform: string;
+
+  if (position === "bottom") {
+    top = r.bottom + gap;
+    if (align === "end") {
+      left = r.right;
+      transform = "translateX(-100%)";
+    } else {
+      left = r.left + r.width / 2;
+      transform = "translateX(-50%)";
+    }
+  } else {
+    top = r.top - gap;
+    if (align === "end") {
+      left = r.right;
+      transform = "translate(-100%, -100%)";
+    } else {
+      left = r.left + r.width / 2;
+      transform = "translate(-50%, -100%)";
+    }
+  }
+
+  return { top, left, transform };
+}
+
+/** Matches former `bg-gray-800` panel — inline so hosts cannot strip tooltip text/background via Tailwind purge/order. */
+const PANEL_BG = "#1f2937";
+
+function arrowStyle(
+  position: "top" | "bottom",
+  align: "center" | "end",
+): CSSProperties {
+  const base: CSSProperties = {
+    position: "absolute",
+    width: 0,
+    height: 0,
+    margin: 0,
+    padding: 0,
+    pointerEvents: "none",
+  };
+  if (position === "bottom") {
+    return {
+      ...base,
+      bottom: "100%",
+      left: align === "end" ? undefined : "50%",
+      right: align === "end" ? "1rem" : undefined,
+      transform: align === "center" ? "translateX(-50%)" : undefined,
+      borderLeft: "4px solid transparent",
+      borderRight: "4px solid transparent",
+      borderBottom: `4px solid ${PANEL_BG}`,
+      borderTop: "none",
+    };
+  }
+  return {
+    ...base,
+    top: "100%",
+    left: align === "end" ? undefined : "50%",
+    right: align === "end" ? "1rem" : undefined,
+    transform: align === "center" ? "translateX(-50%)" : undefined,
+    borderLeft: "4px solid transparent",
+    borderRight: "4px solid transparent",
+    borderTop: `4px solid ${PANEL_BG}`,
+    borderBottom: "none",
+  };
+}
+
 export function Tooltip({
   content,
   children,
   position = "bottom",
   align = "center",
 }: TooltipProps) {
-  const verticalClasses =
-    position === "top" ? "bottom-full mb-2" : "top-full mt-2";
+  const triggerRef = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+  const [bubblePos, setBubblePos] = useState<
+    Pick<CSSProperties, "top" | "left" | "transform">
+  >({ top: 0, left: 0, transform: "translateX(-50%)" });
 
-  const alignClasses =
-    align === "end" ? "right-0" : "left-1/2 -translate-x-1/2";
+  const hideTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const arrowAlign =
-    align === "end" ? "right-4" : "left-1/2 -translate-x-1/2";
+  const clearHideTimer = useCallback(() => {
+    if (hideTimeoutRef.current != null) {
+      clearTimeout(hideTimeoutRef.current);
+      hideTimeoutRef.current = null;
+    }
+  }, []);
 
-  const arrowClasses =
-    position === "top"
-      ? `top-full ${arrowAlign} border-t-gray-800 border-l-transparent border-r-transparent border-b-transparent border-t-4 border-l-4 border-r-4`
-      : `bottom-full ${arrowAlign} border-b-gray-800 border-l-transparent border-r-transparent border-t-transparent border-b-4 border-l-4 border-r-4`;
+  const syncPosition = useCallback(() => {
+    const el = triggerRef.current;
+    if (!el || typeof window === "undefined") return;
+    setBubblePos(computeBubblePosition(el, position, align));
+  }, [position, align]);
+
+  useLayoutEffect(() => {
+    if (!visible) return;
+    syncPosition();
+    window.addEventListener("scroll", syncPosition, true);
+    window.addEventListener("resize", syncPosition);
+    return () => {
+      window.removeEventListener("scroll", syncPosition, true);
+      window.removeEventListener("resize", syncPosition);
+    };
+  }, [visible, syncPosition]);
+
+  useEffect(
+    () => () => {
+      clearHideTimer();
+    },
+    [clearHideTimer],
+  );
+
+  const scheduleHide = () => {
+    clearHideTimer();
+    hideTimeoutRef.current = setTimeout(() => setVisible(false), 120);
+  };
+
+  const show = () => {
+    clearHideTimer();
+    syncPosition();
+    setVisible(true);
+  };
+
+  const tooltipNode =
+    visible && typeof document !== "undefined"
+      ? createPortal(
+          <div
+            style={{
+              position: "fixed",
+              ...bubblePos,
+              zIndex: 9999,
+              pointerEvents: "none",
+              width: "max-content",
+              maxWidth: "min(18rem, calc(100vw - 1.5rem))",
+              opacity: 1,
+              transition: "opacity 150ms ease",
+            }}
+            role="tooltip"
+          >
+            <div
+              style={{
+                position: "relative",
+                whiteSpace: "normal",
+                boxShadow:
+                  "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
+                borderRadius: "0.375rem",
+                backgroundColor: PANEL_BG,
+                color: "#ffffff",
+                padding: "0.5rem 0.75rem",
+                fontSize: "0.75rem",
+                lineHeight: 1.625,
+                fontWeight: 500,
+                WebkitFontSmoothing: "antialiased",
+              }}
+            >
+              {content}
+              <div style={arrowStyle(position, align)} aria-hidden />
+            </div>
+          </div>,
+          document.body,
+        )
+      : null;
 
   return (
-    <div className="relative group inline-block">
-      {children}
+    <>
       <div
-        className={`absolute ${verticalClasses} ${alignClasses} z-50 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-150 w-max`}
+        ref={triggerRef}
+        style={{ display: "inline-block" }}
+        onMouseEnter={show}
+        onMouseLeave={scheduleHide}
       >
-        <div className="bg-gray-800 text-white text-xs leading-relaxed font-medium px-3 py-2 rounded-md shadow-lg">
-          {content}
-          <div className={`absolute ${arrowClasses} w-0 h-0`} />
-        </div>
+        {children}
       </div>
-    </div>
+      {tooltipNode}
+    </>
   );
 }

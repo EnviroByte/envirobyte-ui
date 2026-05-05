@@ -43,7 +43,8 @@ jobs:
             exit 1
           fi
 
-      - run: npm ci
+      # Avoid duplicate builds: package.json `prepare` runs `npm run build`.
+      - run: npm ci --ignore-scripts
       - run: npm run typecheck
       - run: npm run build
 

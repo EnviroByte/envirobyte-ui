@@ -24,6 +24,7 @@
     "registry": "https://npm.pkg.github.com"
   },
   "scripts": {
+    "prepare": "npm run build",
     "dev": "concurrently \"tsup --watch\" \"npm run dev:css\"",
     "dev:css": "postcss src/styles.css -o dist/styles.css --watch",
     "build": "tsup && postcss src/styles.css -o dist/styles.css",

@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Dialog, DialogBackdrop, DialogTitle } from "@headlessui/react";
+import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from "@headlessui/react";
 import { X, GripHorizontal } from "lucide-react";
 import type { ReactNode } from "react";
 import { cn } from "../../../lib/utils";
@@ -180,10 +180,10 @@ export function ResizableDialog({
 
       {/* Centered container — pointer-events-none so clicks pass through to backdrop */}
       <div className="fixed inset-0 flex items-center justify-center overflow-hidden pointer-events-none">
-        <div
+        <DialogPanel
           ref={panelRef}
           className={cn(
-            "pointer-events-auto relative bg-white rounded-xl shadow-2xl ring-1 ring-slate-200 flex flex-col",
+            "pointer-events-auto relative bg-white rounded-xl shadow-2xl ring-1 ring-slate-200 flex flex-col min-h-0 overflow-hidden",
             "animate-in fade-in zoom-in-95 duration-200",
             active && "select-none",
             className,
@@ -247,7 +247,7 @@ export function ResizableDialog({
           {(["e", "s", "se", "sw", "w", "n", "ne", "nw"] as ResizeEdge[]).map((edge) => (
             <ResizeHandle key={edge} edge={edge} onMouseDown={startResize} />
           ))}
-        </div>
+        </DialogPanel>
       </div>
     </Dialog>
   );

@@ -14,7 +14,7 @@ export interface NavbarApp {
 export interface NavbarCompany {
   /** Company name shown in breadcrumb */
   name: string;
-  /** Optional facility/site name shown after the company */
+  /** Optional Well/Site name shown after the company */
   facilityName?: string;
   /** Icon element for the facility pill */
   facilityIcon?: React.ReactNode;

@@ -71,7 +71,7 @@ export function Select({
           <ListboxOptions
             transition
             className={cn(
-              "absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-sm shadow-lg ring-1 ring-black/5",
+              "absolute z-[200] mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-sm shadow-lg ring-1 ring-black/5",
               "focus:outline-none",
               "transition-all duration-100 data-[closed]:opacity-0 data-[closed]:scale-95"
             )}

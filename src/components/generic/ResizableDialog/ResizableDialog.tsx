@@ -28,7 +28,8 @@ export interface ResizableDialogProps {
   footer?: ReactNode;
   /**
    * Body scroll/clipping: `"auto"` (default) scrolls long content but clips overflowing popovers;
-   * `"visible"` allows dropdowns/portaled-like overlays to extend outside the body (use when content is short).
+   * `"visible"` also sets the dialog panel and outer centering layer to `overflow-visible` so
+   * in-dialog popovers (e.g. Headless UI Listbox) are not clipped.
    */
   bodyOverflow?: "auto" | "visible";
 }
@@ -67,6 +68,8 @@ export function ResizableDialog({
 }: ResizableDialogProps) {
   const resolvedMaxW = maxWidth  ?? (typeof window !== "undefined" ? window.innerWidth  * 0.92 : 1200);
   const resolvedMaxH = maxHeight ?? (typeof window !== "undefined" ? window.innerHeight * 0.92 : 900);
+
+  const allowPopoverOverflow = bodyOverflow === "visible";
 
   const [size, setSize] = useState<Size>({ w: defaultWidth, h: defaultHeight ?? 0 });
   const [pos,  setPos]  = useState<Pos>({ x: 0, y: 0 });
@@ -179,11 +182,17 @@ export function ResizableDialog({
       />
 
       {/* Centered container — pointer-events-none so clicks pass through to backdrop */}
-      <div className="fixed inset-0 flex items-center justify-center overflow-hidden pointer-events-none">
+      <div
+        className={cn(
+          "fixed inset-0 flex items-center justify-center pointer-events-none",
+          allowPopoverOverflow ? "overflow-visible" : "overflow-hidden",
+        )}
+      >
         <DialogPanel
           ref={panelRef}
           className={cn(
-            "pointer-events-auto relative bg-white rounded-xl shadow-2xl ring-1 ring-slate-200 flex flex-col min-h-0 overflow-hidden",
+            "pointer-events-auto relative bg-white rounded-xl shadow-2xl ring-1 ring-slate-200 flex flex-col min-h-0",
+            allowPopoverOverflow ? "overflow-visible" : "overflow-hidden",
             "animate-in fade-in zoom-in-95 duration-200",
             active && "select-none",
             className,

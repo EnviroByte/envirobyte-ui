@@ -197,7 +197,7 @@ export function FilterBar({
                 isClearable
                 isMulti
                 isSearchable
-                controlShouldRenderValue={false}
+                controlShouldRenderValue={true}
                 styles={defaultSelectStyles}
                 isLoading={filter.isLoading}
                 isDisabled={filter.disabled}

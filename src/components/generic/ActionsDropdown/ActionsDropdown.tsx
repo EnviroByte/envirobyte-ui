@@ -1,15 +1,8 @@
 "use client";
 
-import {
-  useState,
-  useRef,
-  useEffect,
-  useCallback,
-  type ReactNode,
-} from "react";
-import { createPortal } from "react-dom";
-import { MoreVertical } from "lucide-react";
+import { type ReactNode } from "react";
 import { cn } from "../../../lib/utils";
+import { Tooltip } from "../Tooltip";
 
 export interface ActionItem {
   label: string;
@@ -26,120 +19,48 @@ export interface ActionsDropdownProps {
 }
 
 export function ActionsDropdown({ items, onSelect, className }: ActionsDropdownProps) {
-  const [open, setOpen] = useState(false);
-  const [coords, setCoords] = useState<{ top: number; left: number } | null>(
-    null,
-  );
-  const triggerRef = useRef<HTMLButtonElement>(null);
-  const panelRef = useRef<HTMLDivElement>(null);
-
-  const close = useCallback(() => setOpen(false), []);
-
-  const reposition = useCallback(() => {
-    const btn = triggerRef.current;
-    if (!btn) return;
-    const rect = btn.getBoundingClientRect();
-    const menuW = 224;
-    let left = rect.right - menuW;
-    if (left < 8) left = 8;
-    setCoords({ top: rect.bottom + 4, left });
-  }, []);
-
-  useEffect(() => {
-    if (!open) return;
-    reposition();
-
-    function onClickOutside(e: MouseEvent) {
-      const target = e.target as Node;
-      if (
-        panelRef.current &&
-        !panelRef.current.contains(target) &&
-        triggerRef.current &&
-        !triggerRef.current.contains(target)
-      ) {
-        close();
-      }
-    }
-    function onKey(e: KeyboardEvent) {
-      if (e.key === "Escape") close();
-    }
-    function onScroll() {
-      close();
-    }
-
-    document.addEventListener("mousedown", onClickOutside);
-    document.addEventListener("keydown", onKey);
-    window.addEventListener("scroll", onScroll, true);
-    window.addEventListener("resize", close);
-
-    return () => {
-      document.removeEventListener("mousedown", onClickOutside);
-      document.removeEventListener("keydown", onKey);
-      window.removeEventListener("scroll", onScroll, true);
-      window.removeEventListener("resize", close);
-    };
-  }, [open, close, reposition]);
-
   return (
-    <>
-      <button
-        ref={triggerRef}
-        type="button"
-        onClick={() => setOpen((v) => !v)}
-        className={cn(
-          "inline-flex items-center justify-center rounded-md p-1.5",
-          "text-gray-400 hover:text-gray-700 hover:bg-gray-100",
-          "transition-colors focus:outline-none focus:ring-2 focus:ring-primary/40",
-          className,
-        )}
-      >
-        <MoreVertical className="h-4 w-4" />
-      </button>
-
-      {open &&
-        coords &&
-        createPortal(
-          <div
-            ref={panelRef}
-            role="menu"
-            style={{
-              position: "fixed",
-              top: coords.top,
-              left: coords.left,
-              zIndex: 9999,
+    <div className={cn("inline-flex items-center gap-2", className)}>
+      {items.map((item) => (
+        <Tooltip key={item.value} content={item.label} position="top">
+          <button
+            type="button"
+            aria-label={item.label}
+            disabled={item.disabled}
+            onClick={() => {
+              if (!item.disabled) onSelect(item.value);
             }}
-            className="w-56 rounded-lg bg-white py-1 shadow-lg ring-1 ring-black/5"
+            className={cn(
+              "inline-flex h-7 w-7 items-center justify-center rounded-md transition-colors",
+              "hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-primary/40",
+              actionColor(item),
+              item.disabled && "cursor-not-allowed opacity-40",
+            )}
           >
-            {items.map((item) => (
-              <button
-                key={item.value}
-                role="menuitem"
-                type="button"
-                disabled={item.disabled}
-                onClick={() => {
-                  if (!item.disabled) {
-                    onSelect(item.value);
-                    close();
-                  }
-                }}
-                className={cn(
-                  "flex w-full items-center gap-3 px-4 py-2.5 text-sm transition-colors",
-                  "hover:bg-gray-50 focus:bg-gray-50 focus:outline-none",
-                  item.danger
-                    ? "text-red-600 hover:text-red-700"
-                    : "text-gray-700 hover:text-gray-900",
-                  item.disabled && "opacity-50 cursor-not-allowed",
-                )}
-              >
-                {item.icon && (
-                  <span className="h-4 w-4 shrink-0">{item.icon}</span>
-                )}
-                {item.label}
-              </button>
-            ))}
-          </div>,
-          document.body,
-        )}
-    </>
+            {item.icon ? (
+              <span className="h-4 w-4 shrink-0">{item.icon}</span>
+            ) : (
+              <span className="text-xs font-semibold">
+                {item.label.slice(0, 1).toUpperCase()}
+              </span>
+            )}
+          </button>
+        </Tooltip>
+      ))}
+    </div>
   );
+}
+
+function actionColor(item: ActionItem) {
+  if (item.danger || item.value === "delete") return "text-red-500 hover:text-red-600";
+  switch (item.value) {
+    case "history":
+      return "text-cyan-500 hover:text-cyan-600";
+    case "view":
+      return "text-blue-500 hover:text-blue-600";
+    case "edit":
+      return "text-amber-500 hover:text-amber-600";
+    default:
+      return "text-gray-500 hover:text-gray-700";
+  }
 }

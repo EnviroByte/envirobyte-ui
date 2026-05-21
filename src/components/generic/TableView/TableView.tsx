@@ -27,6 +27,12 @@ export interface TableViewColumn<T> {
   render: (row: T) => ReactNode;
   /** Pin this column sticky to the right, immediately before the Actions column. */
   stickyRight?: boolean;
+  /**
+   * When stickyRight is true, override the right offset (e.g. "196px").
+   * Defaults to "0px". Use this when stacking multiple sticky-right columns
+   * so each sits immediately to the left of the ones after it.
+   */
+  stickyRightOffset?: string;
   /** Enable sorting on this column. Default false. */
   sortable?: boolean;
   /** Custom compare function for client-side sort. Receives two row values. */
@@ -103,8 +109,7 @@ export function TableView<T,>({
 
   const hasActions = !!actionItems;
   const hasAccessory = !!rowAccessory;
-  const actionsW = hasAccessory ? "w-28" : "w-20";
-  const actionsRightOffset = hasAccessory ? "right-28" : "right-20";
+  const actionsW = hasAccessory ? "w-40" : "w-32";
   const hasStickyRight = columns.some((c) => c.stickyRight);
   const totalCols = columns.length + (hasActions ? 1 : 0);
 
@@ -161,14 +166,14 @@ export function TableView<T,>({
                 return (
                   <th
                     key={col.key}
+                    style={col.stickyRight ? { right: col.stickyRightOffset ?? "0px" } : undefined}
                     className={cn(
                       TH_BASE,
                       isFirst && "rounded-tl-lg",
                       isLast && !hasActions && !col.stickyRight && "rounded-tr-lg",
                       col.stickyRight && [
                         "sticky z-[3] bg-gray-50 border-l border-gray-100",
-                        hasActions ? actionsRightOffset : "right-0",
-                        !hasActions && "rounded-tr-lg",
+                        !hasActions && !col.stickyRightOffset && "rounded-tr-lg",
                       ],
                       col.headerClassName,
                     )}
@@ -239,11 +244,11 @@ export function TableView<T,>({
                   {columns.map((col) => (
                     <td
                       key={col.key}
+                      style={col.stickyRight ? { right: col.stickyRightOffset ?? "0px" } : undefined}
                       className={cn(
                         "py-3 px-4",
                         col.stickyRight && [
                           "sticky bg-white border-l border-gray-100 group-hover:bg-gray-50",
-                          hasActions ? actionsRightOffset : "right-0",
                         ],
                         col.cellClassName,
                       )}

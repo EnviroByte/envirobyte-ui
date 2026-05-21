@@ -112,6 +112,16 @@ export { Tooltip } from "./components/generic/Tooltip";
 export { ActionsDropdown } from "./components/generic/ActionsDropdown";
 export type { ActionsDropdownProps, ActionItem } from "./components/generic/ActionsDropdown";
 
+export { HistoryChanges } from "./components/generic/HistoryChanges";
+export type { HistoryChangesProps, HistoryChange } from "./components/generic/HistoryChanges";
+export {
+  formatChangeValue,
+  formatFieldLabel,
+  isLongChangeValue,
+  isUuidValue,
+  visibleChanges,
+} from "./components/generic/HistoryChanges";
+
 export { ActionBar } from "./components/generic/ActionBar";
 export type { ActionBarProps } from "./components/generic/ActionBar";
 

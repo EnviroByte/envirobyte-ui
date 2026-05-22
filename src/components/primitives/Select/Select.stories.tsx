@@ -54,3 +54,28 @@ export const WithError: Story = {
 export const Disabled: Story = {
   render: () => <SelectDemo label="Province" disabled />,
 };
+
+function MonthSelectDemo() {
+  const [value, setValue] = useState("9");
+  const monthOptions: SelectOption[] = [
+    { value: "1", label: "January" },
+    { value: "9", label: "September" },
+    { value: "12", label: "December" },
+  ];
+  return (
+    <div className="w-72">
+      <Select
+        value={value}
+        onChange={setValue}
+        options={monthOptions}
+        label="Month"
+        hideSelectedIndicator
+        truncateSelected={false}
+      />
+    </div>
+  );
+}
+
+export const WithoutCheckmark: Story = {
+  render: () => <MonthSelectDemo />,
+};

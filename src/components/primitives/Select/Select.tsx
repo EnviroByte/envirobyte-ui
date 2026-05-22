@@ -22,6 +22,10 @@ export interface SelectProps {
   error?: string;
   disabled?: boolean;
   className?: string;
+  /** When false, selected option text is not truncated in the closed button. */
+  truncateSelected?: boolean;
+  /** When true, hides the checkmark beside the selected option in the list. */
+  hideSelectedIndicator?: boolean;
 }
 
 export function Select({
@@ -33,6 +37,8 @@ export function Select({
   error,
   disabled = false,
   className,
+  truncateSelected = true,
+  hideSelectedIndicator = false,
 }: SelectProps) {
   const selected = options.find((o) => o.value === value);
 
@@ -57,7 +63,8 @@ export function Select({
           >
             <span
               className={cn(
-                "block truncate",
+                "block",
+                truncateSelected && "truncate",
                 selected ? "text-gray-900" : "text-gray-400"
               )}
             >
@@ -71,7 +78,7 @@ export function Select({
           <ListboxOptions
             transition
             className={cn(
-              "absolute z-[200] mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-sm shadow-lg ring-1 ring-black/5",
+              "absolute z-[200] mt-1 max-h-60 min-w-full w-max overflow-auto rounded-md bg-white py-1 text-sm shadow-lg ring-1 ring-black/5",
               "focus:outline-none",
               "transition-all duration-100 data-[closed]:opacity-0 data-[closed]:scale-95"
             )}
@@ -82,7 +89,8 @@ export function Select({
                 value={option.value}
                 disabled={option.disabled}
                 className={cn(
-                  "relative cursor-pointer select-none py-2 pl-10 pr-4",
+                  "relative cursor-pointer select-none py-2 pr-4",
+                  hideSelectedIndicator ? "pl-3" : "pl-10",
                   "data-[focus]:bg-primary data-[focus]:text-white",
                   "data-[disabled]:opacity-50 data-[disabled]:cursor-not-allowed"
                 )}
@@ -91,13 +99,13 @@ export function Select({
                   <>
                     <span
                       className={cn(
-                        "block truncate",
+                        "block whitespace-nowrap",
                         isSelected ? "font-medium" : "font-normal"
                       )}
                     >
                       {option.label}
                     </span>
-                    {isSelected && (
+                    {isSelected && !hideSelectedIndicator && (
                       <span className="absolute inset-y-0 left-0 flex items-center pl-3">
                         <Check className="h-4 w-4" />
                       </span>

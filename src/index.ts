@@ -134,6 +134,9 @@ export type { NavbarProps, NavbarUser, NavbarCompany, NavbarApp } from "./compon
 export { SelectCompanyPage } from "./components/generic/SelectCompanyPage";
 export type { SelectCompanyPageProps, SelectableCompany } from "./components/generic/SelectCompanyPage";
 
+export { AppHubDropdown } from "./components/generic/AppHubDropdown";
+export type { AppHubDropdownProps, AppHubApp } from "./components/generic/AppHubDropdown";
+
 export { CommandPalette } from "./components/generic/CommandPalette";
 export type {
   CommandPaletteProps,

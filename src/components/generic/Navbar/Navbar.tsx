@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { AppHubDropdown } from "../AppHubDropdown";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -104,14 +105,6 @@ function BellIcon({ className }: { className?: string }) {
   );
 }
 
-function GridIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" />
-      <rect x="14" y="14" width="7" height="7" /><rect x="3" y="14" width="7" height="7" />
-    </svg>
-  );
-}
 
 function SunIcon({ className }: { className?: string }) {
   return (
@@ -228,14 +221,11 @@ export function Navbar({
   onCompanyClick,
 }: NavbarProps) {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
-  const [appSwitcherOpen, setAppSwitcherOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
 
   const userMenuRef = useRef<HTMLDivElement>(null!);
-  const appSwitcherRef = useRef<HTMLDivElement>(null!);
 
   useOutsideClick(userMenuRef, () => setUserMenuOpen(false));
-  useOutsideClick(appSwitcherRef, () => setAppSwitcherOpen(false));
 
   function handleSearchChange(e: React.ChangeEvent<HTMLInputElement>) {
     setSearchValue(e.target.value);
@@ -316,41 +306,10 @@ export function Navbar({
 
         {/* App Switcher */}
         {apps.length > 0 && (
-          <div ref={appSwitcherRef} className="relative">
-            <button
-              onClick={() => setAppSwitcherOpen((o) => !o)}
-              className="flex h-8 w-8 items-center justify-center rounded-md text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
-              aria-label="App switcher"
-            >
-              <GridIcon />
-            </button>
-
-            {appSwitcherOpen && (
-              <div className="absolute right-0 top-10 z-50 w-64 rounded-xl border border-gray-200 bg-white p-4 shadow-dropdown dark:border-gray-700 dark:bg-gray-900">
-                <p className="mb-3 text-center text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">
-                  EnviroBytes App Hub
-                </p>
-                <div className="grid grid-cols-3 gap-2">
-                  {apps.map((app, i) => (
-                    <a
-                      key={i}
-                      href={app.href}
-                      className="flex flex-col items-center gap-1.5 rounded-lg p-2 text-center transition-colors hover:bg-gray-100 dark:hover:bg-gray-800"
-                    >
-                      {app.icon && (
-                        <span className="flex h-8 w-8 items-center justify-center text-gray-600 dark:text-gray-300">
-                          {app.icon}
-                        </span>
-                      )}
-                      <span className="text-xs font-medium text-gray-700 dark:text-gray-300">
-                        {app.label}
-                      </span>
-                    </a>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
+          <AppHubDropdown
+            apps={apps}
+            columns={apps.length > 4 ? 3 : 2}
+          />
         )}
 
         {/* User Menu */}

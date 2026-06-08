@@ -133,3 +133,13 @@ export type { NavbarProps, NavbarUser, NavbarCompany, NavbarApp } from "./compon
 
 export { SelectCompanyPage } from "./components/generic/SelectCompanyPage";
 export type { SelectCompanyPageProps, SelectableCompany } from "./components/generic/SelectCompanyPage";
+
+export { CommandPalette } from "./components/generic/CommandPalette";
+export type {
+  CommandPaletteProps,
+  CommandPaletteItem,
+  CommandPaletteRecentPage,
+} from "./components/generic/CommandPalette";
+
+export { SearchTriggerButton } from "./components/generic/CommandPalette";
+export type { SearchTriggerButtonProps } from "./components/generic/CommandPalette";

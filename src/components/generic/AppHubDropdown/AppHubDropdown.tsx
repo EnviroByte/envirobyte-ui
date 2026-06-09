@@ -1,28 +1,35 @@
 "use client";
 
-import { type ReactNode, useEffect, useRef, useState } from "react";
+import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { cn } from "../../../lib/utils";
+import {
+  getAppHubColumns,
+  resolveAppHubApps,
+  type GetAppHubAppsOptions,
+} from "./appHubApps";
+import type { AppHubAppId } from "./appHubIcons";
 
 export interface AppHubApp {
+  /** Stable app identifier — used to hide the current app from the hub. */
+  id?: AppHubAppId;
   /** App display name */
   label: string;
   /** URL to navigate to when clicked */
   href: string;
   /** Icon element (any ReactNode — lucide icon, SVG, img, etc.) */
   icon?: ReactNode;
-  /** Highlight this app as the one currently active */
+  /** @deprecated Current app is hidden via `currentApp` instead of highlighted. */
   active?: boolean;
 }
 
-export interface AppHubDropdownProps {
-  /** List of apps to show in the grid */
-  apps: AppHubApp[];
+export interface AppHubDropdownProps extends GetAppHubAppsOptions {
+  /** Custom app list. When omitted, the standard EnviroByte apps are used. */
+  apps?: AppHubApp[];
   /** Heading text inside the panel */
   title?: string;
   /**
    * Number of columns in the app grid.
-   * Use 2 for ≤4 apps, 3 for 5-6 apps.
-   * @default 2
+   * Defaults based on visible app count when omitted.
    */
   columns?: 2 | 3;
   /** Panel alignment relative to the trigger button */
@@ -46,13 +53,22 @@ function GridIcon() {
 
 export function AppHubDropdown({
   apps,
+  currentApp,
+  hrefOverrides,
   title = "EnviroByte App Hub",
-  columns = 2,
+  columns,
   align = "right",
   className,
 }: AppHubDropdownProps) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null!);
+
+  const visibleApps = useMemo(
+    () => resolveAppHubApps(apps, currentApp, hrefOverrides) ?? [],
+    [apps, currentApp, hrefOverrides]
+  );
+
+  const gridColumns = columns ?? getAppHubColumns(visibleApps.length);
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -63,6 +79,10 @@ export function AppHubDropdown({
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  if (visibleApps.length === 0) {
+    return null;
+  }
 
   return (
     <div className="relative" ref={ref}>
@@ -101,18 +121,17 @@ export function AppHubDropdown({
           <div
             className={cn(
               "grid gap-1 p-3",
-              columns === 3 ? "grid-cols-3" : "grid-cols-2"
+              gridColumns === 3 ? "grid-cols-3" : "grid-cols-2"
             )}
           >
-            {apps.map((app) => (
+            {visibleApps.map((app) => (
               <a
-                key={app.label}
+                key={app.id ?? app.label}
                 href={app.href}
                 onClick={() => setOpen(false)}
                 className={cn(
                   "group flex flex-col items-center gap-2 rounded-lg p-3 transition-colors",
-                  "hover:bg-slate-50 dark:hover:bg-slate-800",
-                  app.active && "bg-slate-50 ring-1 ring-slate-200 dark:bg-slate-800 dark:ring-slate-700"
+                  "hover:bg-slate-50 dark:hover:bg-slate-800"
                 )}
               >
                 {app.icon && (
@@ -120,14 +139,7 @@ export function AppHubDropdown({
                     {app.icon}
                   </span>
                 )}
-                <span
-                  className={cn(
-                    "text-xs font-semibold",
-                    app.active
-                      ? "text-slate-900 dark:text-slate-100"
-                      : "text-slate-600 dark:text-slate-400"
-                  )}
-                >
+                <span className="text-xs font-semibold text-slate-600 dark:text-slate-400">
                   {app.label}
                 </span>
               </a>

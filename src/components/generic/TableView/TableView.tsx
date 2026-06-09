@@ -110,8 +110,21 @@ export function TableView<T,>({
   const hasActions = !!actionItems;
   const hasAccessory = !!rowAccessory;
   const actionsW = hasAccessory ? "w-40" : "w-32";
-  const hasStickyRight = columns.some((c) => c.stickyRight);
-  const totalCols = columns.length + (hasActions ? 1 : 0);
+  const stickyRightColumns = useMemo(
+    () => columns.filter((c) => c.stickyRight),
+    [columns],
+  );
+
+  function stickyRightStack(col: TableViewColumn<T>) {
+    const idx = stickyRightColumns.indexOf(col);
+    if (idx < 0) return null;
+    return {
+      isLeftmost: idx === 0,
+      isRightmost: idx === stickyRightColumns.length - 1,
+      bodyZ: (["z-[2]", "z-[3]", "z-[4]"] as const)[idx] ?? "z-[2]",
+      headerZ: (["z-[4]", "z-[5]", "z-[6]"] as const)[idx] ?? "z-[4]",
+    };
+  }
 
   function setSort(key: string, direction: SortDirection) {
     // Clicking the already-active direction clears the sort
@@ -162,6 +175,7 @@ export function TableView<T,>({
                 const isFirst = i === 0;
                 const isLast = i === columns.length - 1;
                 const isSorted = activeSort?.key === col.key;
+                const stickyStack = stickyRightStack(col);
 
                 return (
                   <th
@@ -171,9 +185,11 @@ export function TableView<T,>({
                       TH_BASE,
                       isFirst && "rounded-tl-lg",
                       isLast && !hasActions && !col.stickyRight && "rounded-tr-lg",
-                      col.stickyRight && [
-                        "sticky z-[3] bg-gray-50 border-l border-gray-100",
-                        !hasActions && !col.stickyRightOffset && "rounded-tr-lg",
+                      stickyStack && [
+                        "sticky bg-gray-50",
+                        stickyStack.headerZ,
+                        stickyStack.isLeftmost && "border-l border-gray-100",
+                        stickyStack.isRightmost && !hasActions && "rounded-tr-lg",
                       ],
                       col.headerClassName,
                     )}
@@ -241,21 +257,27 @@ export function TableView<T,>({
                     onRowClick && "cursor-pointer",
                   )}
                 >
-                  {columns.map((col) => (
+                  {columns.map((col) => {
+                    const stickyStack = stickyRightStack(col);
+
+                    return (
                     <td
                       key={col.key}
                       style={col.stickyRight ? { right: col.stickyRightOffset ?? "0px" } : undefined}
                       className={cn(
                         "py-3 px-4",
-                        col.stickyRight && [
-                          "sticky bg-white border-l border-gray-100 group-hover:bg-gray-50",
+                        stickyStack && [
+                          "sticky bg-white group-hover:bg-gray-50",
+                          stickyStack.bodyZ,
+                          stickyStack.isLeftmost && "border-l border-gray-100",
                         ],
                         col.cellClassName,
                       )}
                     >
                       {col.render(row)}
                     </td>
-                  ))}
+                    );
+                  })}
 
                   {hasActions && actionItems && (
                     <td

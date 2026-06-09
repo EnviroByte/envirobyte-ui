@@ -4,3 +4,4 @@ dist/
 .storybook-out/
 storybook-static/
 .DS_Store
+*.tgz

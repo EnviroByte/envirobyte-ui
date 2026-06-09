@@ -1,25 +1,8 @@
 /// <reference path="../../../vite-env.d.ts" />
 import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
+import { getAppHubApps } from "../AppHubDropdown/appHubApps";
 import { Navbar } from "./Navbar";
-
-import steamSvg from "./icons/steam.svg?raw";
-import aefHubSvg from "./icons/aef-hub.svg?raw";
-import dataPivotSvg from "./icons/data-pivot.svg?raw";
-import emissionxSvg from "./icons/emissionx.svg?raw";
-import rimSvg from "./icons/rim.svg?raw";
-import openpemsSvg from "./icons/openpems.svg?raw";
-
-/** Inline SVG so `fill="currentColor"` follows the Navbar hub text color (light/dark). */
-function AppHubIcon({ svg }: { svg: string }) {
-  return (
-    <span
-      className="inline-flex h-full w-full items-center justify-center [&>svg]:block [&>svg]:h-full [&>svg]:w-full"
-      dangerouslySetInnerHTML={{ __html: svg }}
-      aria-hidden
-    />
-  );
-}
 
 const meta: Meta<typeof Navbar> = {
   title: "Generic/Navbar",
@@ -32,38 +15,7 @@ const meta: Meta<typeof Navbar> = {
 export default meta;
 type Story = StoryObj<typeof Navbar>;
 
-const mockApps = [
-  {
-    label: "Steam",
-    href: "https://steam.envirobyte.com",
-    icon: <AppHubIcon svg={steamSvg} />,
-  },
-  {
-    label: "AEF Hub",
-    href: "https://aefhub.envirobyte.com",
-    icon: <AppHubIcon svg={aefHubSvg} />,
-  },
-  {
-    label: "Data Pivot",
-    href: "https://datapivot.envirobyte.com",
-    icon: <AppHubIcon svg={dataPivotSvg} />,
-  },
-  {
-    label: "EmissionX",
-    href: "https://emissionx-dev.envirobyte.com",
-    icon: <AppHubIcon svg={emissionxSvg} />,
-  },
-  {
-    label: "RIM",
-    href: "https://rim.envirobyte.com",
-    icon: <AppHubIcon svg={rimSvg} />,
-  },
-  {
-    label: "AtmosIQ",
-    href: "https://atmosiq.envirobyte.com",
-    icon: <AppHubIcon svg={openpemsSvg} />,
-  },
-];
+const mockApps = getAppHubApps();
 
 const mockUser = {
   name: "Maxine Afable",

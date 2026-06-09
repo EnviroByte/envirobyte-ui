@@ -135,7 +135,21 @@ export { SelectCompanyPage } from "./components/generic/SelectCompanyPage";
 export type { SelectCompanyPageProps, SelectableCompany } from "./components/generic/SelectCompanyPage";
 
 export { AppHubDropdown } from "./components/generic/AppHubDropdown";
-export type { AppHubDropdownProps, AppHubApp } from "./components/generic/AppHubDropdown";
+export type {
+  AppHubDropdownProps,
+  AppHubApp,
+  AppHubAppId,
+  AppHubAppDefinition,
+  AppHubIconProps,
+  GetAppHubAppsOptions,
+} from "./components/generic/AppHubDropdown";
+export {
+  AppHubIcon,
+  APP_HUB_DEFINITIONS,
+  APP_HUB_ICON_FILES,
+  getAppHubApps,
+  getAppHubColumns,
+} from "./components/generic/AppHubDropdown";
 
 export { CommandPalette } from "./components/generic/CommandPalette";
 export type {

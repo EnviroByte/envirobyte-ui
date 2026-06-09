@@ -36,12 +36,12 @@ const defaultSelectStyles: StylesConfig<FilterOption, true> = {
   control: (base, state) => ({
     ...base,
     backgroundColor: state.isDisabled ? "#f3f4f6" : "white",
-    borderColor: "#e5e7eb",
+    borderColor: state.isFocused ? "var(--color-primary)" : "#e5e7eb",
     minHeight: "42px",
     boxShadow: "none",
     outline: "none",
     "&:hover": {
-      borderColor: "#02364B",
+      borderColor: "var(--color-primary)",
     },
   }),
   input: (base) => ({
@@ -53,20 +53,36 @@ const defaultSelectStyles: StylesConfig<FilterOption, true> = {
     ...base,
     color: "#9ca3af",
   }),
+  option: (base, state) => ({
+    ...base,
+    backgroundColor: state.isSelected
+      ? "var(--color-primary-50)"
+      : state.isFocused
+        ? "var(--color-gray-50)"
+        : "white",
+    color: state.isSelected ? "var(--color-primary)" : "#374151",
+    cursor: "pointer",
+    fontWeight: state.isSelected ? 500 : 400,
+    ":active": {
+      backgroundColor: state.isSelected
+        ? "var(--color-primary-50)"
+        : "var(--color-gray-50)",
+    },
+  }),
   multiValue: (base) => ({
     ...base,
-    backgroundColor: "#e8eef0",
+    backgroundColor: "var(--color-primary-50)",
   }),
   multiValueLabel: (base) => ({
     ...base,
-    color: "#02364B",
+    color: "var(--color-primary)",
   }),
   multiValueRemove: (base) => ({
     ...base,
-    color: "#02364B",
+    color: "var(--color-primary)",
     "&:hover": {
-      backgroundColor: "#c5d4d9",
-      color: "#022a3a",
+      backgroundColor: "var(--color-primary-100)",
+      color: "var(--color-primary-hover)",
     },
   }),
   menu: (base) => ({
@@ -186,7 +202,7 @@ export function FilterBar({
                 onChange={(e) => handleTextChange(filter.key, e.target.value)}
                 placeholder={filter.placeholder ?? `Search ${filter.label.toLowerCase()}`}
                 disabled={filter.disabled}
-                className="w-full h-[42px] rounded-md border border-gray-200 px-3 text-sm text-gray-900 placeholder:text-gray-400 outline-none hover:border-[#02364B] focus:border-[#02364B] transition-colors disabled:bg-gray-100 disabled:cursor-not-allowed"
+                className="w-full h-[42px] rounded-md border border-gray-200 px-3 text-sm text-gray-900 placeholder:text-gray-400 outline-none hover:border-primary focus:border-primary focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1 transition-colors disabled:bg-gray-100 disabled:cursor-not-allowed"
               />
             ) : (
               <Select<FilterOption, true>

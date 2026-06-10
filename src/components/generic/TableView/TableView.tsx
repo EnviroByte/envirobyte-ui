@@ -14,6 +14,12 @@ import { ActionsDropdown, type ActionItem } from "../ActionsDropdown";
 const TH_BASE =
   "py-3 px-4 text-xs font-bold text-gray-500 uppercase tracking-wider border-t border-b border-gray-100";
 
+/** Fixed widths for the built-in Actions column (must match stickyRightOffset fallbacks). */
+const ACTIONS_STICKY_W = "w-[128px] min-w-[128px]";
+const ACTIONS_STICKY_W_ACCESSORY = "w-[160px] min-w-[160px]";
+const ACTIONS_STICKY_OFFSET = "128px";
+const ACTIONS_STICKY_OFFSET_ACCESSORY = "160px";
+
 // ── Types ─────────────────────────────────────────────────────────────────────
 
 export type SortDirection = "asc" | "desc";
@@ -109,11 +115,23 @@ export function TableView<T,>({
 
   const hasActions = !!actionItems;
   const hasAccessory = !!rowAccessory;
-  const actionsW = hasAccessory ? "w-40" : "w-32";
+  const actionsW = hasAccessory ? ACTIONS_STICKY_W_ACCESSORY : ACTIONS_STICKY_W;
+  const actionsStickyOffset = hasAccessory
+    ? ACTIONS_STICKY_OFFSET_ACCESSORY
+    : ACTIONS_STICKY_OFFSET;
   const stickyRightColumns = useMemo(
     () => columns.filter((c) => c.stickyRight),
     [columns],
   );
+
+  function stickyRightOffset(col: TableViewColumn<T>) {
+    if (!col.stickyRight) return undefined;
+    if (col.stickyRightOffset != null) return col.stickyRightOffset;
+    const idx = stickyRightColumns.indexOf(col);
+    const isRightmostSticky = idx === stickyRightColumns.length - 1;
+    if (hasActions && isRightmostSticky) return actionsStickyOffset;
+    return "0px";
+  }
 
   function stickyRightStack(col: TableViewColumn<T>) {
     const idx = stickyRightColumns.indexOf(col);
@@ -121,8 +139,11 @@ export function TableView<T,>({
     return {
       isLeftmost: idx === 0,
       isRightmost: idx === stickyRightColumns.length - 1,
-      bodyZ: (["z-[2]", "z-[3]", "z-[4]"] as const)[idx] ?? "z-[2]",
-      headerZ: (["z-[4]", "z-[5]", "z-[6]"] as const)[idx] ?? "z-[4]",
+      // All sticky-right columns use the same z-index so they sit side-by-side
+      // at the same visual level. Each column's `right` offset positions it
+      // correctly; no stacking order is needed between them.
+      bodyZ: "z-[2]" as const,
+      headerZ: "z-[4]" as const,
     };
   }
 
@@ -180,7 +201,7 @@ export function TableView<T,>({
                 return (
                   <th
                     key={col.key}
-                    style={col.stickyRight ? { right: col.stickyRightOffset ?? "0px" } : undefined}
+                    style={col.stickyRight ? { right: stickyRightOffset(col) } : undefined}
                     className={cn(
                       TH_BASE,
                       isFirst && "rounded-tl-lg",
@@ -237,7 +258,7 @@ export function TableView<T,>({
                 <th
                   className={cn(
                     TH_BASE,
-                    "rounded-tr-lg sticky right-0 z-[3] bg-gray-50 border-l border-gray-100",
+                    "rounded-tr-lg sticky right-0 z-[5] bg-gray-50 border-l border-gray-100",
                     actionsW,
                   )}
                 >
@@ -263,7 +284,7 @@ export function TableView<T,>({
                     return (
                     <td
                       key={col.key}
-                      style={col.stickyRight ? { right: col.stickyRightOffset ?? "0px" } : undefined}
+                      style={col.stickyRight ? { right: stickyRightOffset(col) } : undefined}
                       className={cn(
                         "py-3 px-4",
                         stickyStack && [
@@ -283,7 +304,7 @@ export function TableView<T,>({
                     <td
                       onClick={(e) => e.stopPropagation()}
                       className={cn(
-                        "py-3 px-4 sticky right-0 bg-white border-l border-gray-100 group-hover:bg-gray-50",
+                        "py-3 px-4 sticky right-0 z-[3] !bg-white border-l border-gray-100 group-hover:!bg-gray-50",
                         actionsW,
                       )}
                     >

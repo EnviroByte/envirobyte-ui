@@ -206,7 +206,7 @@ export function Navbar({
   apps = [],
   company,
   showCompanySwitcher = false,
-  showNotifications = true,
+  showNotifications = false,
   notificationCount = 0,
   showSearch = false,
   searchPlaceholder = "Search...",

@@ -135,11 +135,11 @@ export function AppHubDropdown({
                 )}
               >
                 {app.icon && (
-                  <span className="flex h-7 w-7 items-center justify-center">
+                  <span className="flex h-9 w-9 items-center justify-center">
                     {app.icon}
                   </span>
                 )}
-                <span className="text-xs font-semibold text-slate-600 dark:text-slate-400">
+                <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">
                   {app.label}
                 </span>
               </a>

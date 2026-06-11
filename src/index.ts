@@ -160,3 +160,7 @@ export type {
 
 export { SearchTriggerButton } from "./components/generic/CommandPalette";
 export type { SearchTriggerButtonProps } from "./components/generic/CommandPalette";
+
+export { LoginWithCodeForm, useLoginWithCodeForm } from "./components/generic/LoginWithCodeForm";
+export type { LoginWithCodeFormProps, UseLoginWithCodeFormOptions } from "./components/generic/LoginWithCodeForm";
+export type { LoginCodeEndpoints, LoginCodeEmailStatus } from "./lib/login-code-auth";

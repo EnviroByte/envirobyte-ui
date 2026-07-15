@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Select, { type StylesConfig } from "react-select";
 import AsyncSelect from "react-select/async";
 import { FilterChips, type FilterChip } from "../FilterChips/FilterChips";
@@ -130,6 +130,61 @@ function gridColsClass(cols: { base?: number; md?: number; lg?: number }) {
   return cn(baseMap[base], mdMap[md], lgMap[lg]);
 }
 
+/**
+ * Async (server-side search) select for a single filter.
+ *
+ * react-select loads `defaultOptions` only once on mount. If the caller's
+ * `loadOptions` closure changes later (e.g. companyId hydrates after the first
+ * render, or ops_type changes), the preloaded list would otherwise stay stale
+ * or empty. We remount on loadOptions identity change so the short default list
+ * is re-fetched with the current context, while typing still searches the DB.
+ */
+function AsyncFilterSelect({
+  filter,
+  value,
+  onChange,
+  styles,
+}: {
+  filter: FilterConfig;
+  value: FilterOption[];
+  onChange: (next: readonly FilterOption[] | null) => void;
+  styles: StylesConfig<FilterOption, true>;
+}) {
+  const [reloadKey, setReloadKey] = useState(0);
+  const prevLoad = useRef(filter.loadOptions);
+  useEffect(() => {
+    if (prevLoad.current !== filter.loadOptions) {
+      prevLoad.current = filter.loadOptions;
+      setReloadKey((k) => k + 1);
+    }
+  }, [filter.loadOptions]);
+
+  return (
+    <AsyncSelect<FilterOption, true>
+      key={reloadKey}
+      loadOptions={filter.loadOptions}
+      defaultOptions={filter.defaultOptions ?? true}
+      value={value}
+      onChange={onChange}
+      placeholder={filter.placeholder ?? "Type to search…"}
+      isClearable
+      isMulti
+      isSearchable
+      controlShouldRenderValue={true}
+      styles={styles}
+      isLoading={filter.isLoading}
+      isDisabled={filter.disabled}
+      instanceId={`filterbar-async-${filter.key}`}
+      noOptionsMessage={({ inputValue }) =>
+        inputValue ? "No results found" : "Type to search…"
+      }
+      loadingMessage={() => "Searching…"}
+      // Server decides matches; never re-filter or cache client-side.
+      filterOption={null}
+    />
+  );
+}
+
 export function FilterBar({
   filters,
   values,
@@ -213,29 +268,11 @@ export function FilterBar({
                 className="w-full h-[42px] rounded-md border border-gray-200 px-3 text-sm text-gray-900 placeholder:text-gray-400 outline-none hover:border-primary focus:border-primary focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1 transition-colors disabled:bg-gray-100 disabled:cursor-not-allowed"
               />
             ) : filter.loadOptions ? (
-              <AsyncSelect<FilterOption, true>
-                loadOptions={filter.loadOptions}
-                defaultOptions={filter.defaultOptions ?? true}
+              <AsyncFilterSelect
+                filter={filter}
                 value={(values[filter.key] as FilterOption[]) || []}
                 onChange={(next) => handleSelectChange(filter.key, next)}
-                placeholder={filter.placeholder ?? "Type to search…"}
-                isClearable
-                isMulti
-                isSearchable
-                controlShouldRenderValue={true}
                 styles={defaultSelectStyles}
-                isLoading={filter.isLoading}
-                isDisabled={filter.disabled}
-                instanceId={`filterbar-async-${filter.key}`}
-                noOptionsMessage={({ inputValue }) =>
-                  inputValue ? "No results found" : "Type to search…"
-                }
-                loadingMessage={() => "Searching…"}
-                // Server-side search: the API decides what matches, so never
-                // re-filter results client-side. Also do NOT cache per-input —
-                // caching would pin a stale/empty result (e.g. a transient error)
-                // for that exact query until remount.
-                filterOption={null}
               />
             ) : (
               <Select<FilterOption, true>

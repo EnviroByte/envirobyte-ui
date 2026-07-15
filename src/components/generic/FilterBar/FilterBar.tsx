@@ -231,7 +231,11 @@ export function FilterBar({
                   inputValue ? "No results found" : "Type to search…"
                 }
                 loadingMessage={() => "Searching…"}
-                cacheOptions
+                // Server-side search: the API decides what matches, so never
+                // re-filter results client-side. Also do NOT cache per-input —
+                // caching would pin a stale/empty result (e.g. a transient error)
+                // for that exact query until remount.
+                filterOption={null}
               />
             ) : (
               <Select<FilterOption, true>

@@ -2,6 +2,7 @@
 
 import { useMemo } from "react";
 import Select, { type StylesConfig } from "react-select";
+import AsyncSelect from "react-select/async";
 import { FilterChips, type FilterChip } from "../FilterChips/FilterChips";
 import { cn } from "../../../lib/utils";
 
@@ -15,6 +16,13 @@ export interface FilterConfig {
   label: string;
   type?: "select" | "text";
   options?: FilterOption[];
+  /** When provided, the filter uses async server-side search instead of a static options list. */
+  loadOptions?: (input: string) => Promise<FilterOption[]>;
+  /**
+   * Pre-loaded options shown before the user types (react-select defaultOptions).
+   * Pass `true` to call loadOptions("") on mount, or pass an explicit array.
+   */
+  defaultOptions?: FilterOption[] | boolean;
   isLoading?: boolean;
   disabled?: boolean;
   placeholder?: string;
@@ -203,6 +211,27 @@ export function FilterBar({
                 placeholder={filter.placeholder ?? `Search ${filter.label.toLowerCase()}`}
                 disabled={filter.disabled}
                 className="w-full h-[42px] rounded-md border border-gray-200 px-3 text-sm text-gray-900 placeholder:text-gray-400 outline-none hover:border-primary focus:border-primary focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1 transition-colors disabled:bg-gray-100 disabled:cursor-not-allowed"
+              />
+            ) : filter.loadOptions ? (
+              <AsyncSelect<FilterOption, true>
+                loadOptions={filter.loadOptions}
+                defaultOptions={filter.defaultOptions ?? true}
+                value={(values[filter.key] as FilterOption[]) || []}
+                onChange={(next) => handleSelectChange(filter.key, next)}
+                placeholder={filter.placeholder ?? "Type to search…"}
+                isClearable
+                isMulti
+                isSearchable
+                controlShouldRenderValue={true}
+                styles={defaultSelectStyles}
+                isLoading={filter.isLoading}
+                isDisabled={filter.disabled}
+                instanceId={`filterbar-async-${filter.key}`}
+                noOptionsMessage={({ inputValue }) =>
+                  inputValue ? "No results found" : "Type to search…"
+                }
+                loadingMessage={() => "Searching…"}
+                cacheOptions
               />
             ) : (
               <Select<FilterOption, true>

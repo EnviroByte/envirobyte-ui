@@ -35,8 +35,8 @@ export function SelectCompanyPage({
       <div className="w-full max-w-md">
         {/* Header */}
         <div className="mb-6 text-center">
-          <div className="inline-flex items-center justify-center h-12 w-12 rounded-full bg-cyan-100 mb-4">
-            <Building2 className="h-6 w-6 text-cyan-700" />
+          <div className="inline-flex items-center justify-center h-12 w-12 rounded-full bg-primary-100 mb-4">
+            <Building2 className="h-6 w-6 text-primary-700" />
           </div>
           <h1 className="text-2xl font-bold text-slate-900">{title}</h1>
           <p className="mt-1 text-sm text-slate-500">{description}</p>
@@ -57,14 +57,14 @@ export function SelectCompanyPage({
                     <button
                       onClick={() => onSelect(company)}
                       className={`w-full flex items-center justify-between px-6 py-4 text-left transition-colors hover:bg-slate-50 ${
-                        isActive ? "bg-cyan-50" : ""
+                        isActive ? "bg-primary-50" : ""
                       }`}
                     >
                       <div className="flex items-center gap-3 min-w-0">
                         <div
                           className={`flex items-center justify-center h-9 w-9 rounded-lg shrink-0 ${
                             isActive
-                              ? "bg-cyan-100 text-cyan-700"
+                              ? "bg-primary-100 text-primary-700"
                               : "bg-slate-100 text-slate-500"
                           }`}
                         >
@@ -73,7 +73,7 @@ export function SelectCompanyPage({
                         <div className="min-w-0">
                           <p
                             className={`text-sm font-medium truncate ${
-                              isActive ? "text-cyan-700" : "text-slate-800"
+                              isActive ? "text-primary-700" : "text-slate-800"
                             }`}
                           >
                             {company.name}
@@ -86,7 +86,7 @@ export function SelectCompanyPage({
                         </div>
                       </div>
                       {isActive && (
-                        <Check className="h-4 w-4 text-cyan-600 shrink-0" />
+                        <Check className="h-4 w-4 text-primary-600 shrink-0" />
                       )}
                     </button>
                   </li>

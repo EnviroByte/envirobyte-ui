@@ -44,7 +44,7 @@ export function LoginWithCodeForm({
       <div className="space-y-6">
         <p className="text-sm text-gray-600 text-center">
           We sent a 6-digit code to{" "}
-          <span className="font-semibold text-gray-900">{form.lastEmail}</span>.
+          <span className="font-semibold text-gray-900">{form.lastEmail}</span>
         </p>
 
         <form onSubmit={form.handleVerifyCode} className="space-y-6">

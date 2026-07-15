@@ -40,6 +40,7 @@ export function useLoginWithCodeForm({
   const [codeSubmitting, setCodeSubmitting] = useState(false);
   const [resendCodeLoading, setResendCodeLoading] = useState(false);
   const otpInputRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const sendLockRef = useRef(false);
 
   const query = productQuery ? `?product=${encodeURIComponent(productQuery)}` : "";
   const base = apiBaseUrl.replace(/\/$/, "");
@@ -75,6 +76,8 @@ export function useLoginWithCodeForm({
       notifyError("Password is required");
       return;
     }
+    if (sendLockRef.current) return;
+    sendLockRef.current = true;
 
     setCredentialsSubmitting(true);
     try {
@@ -104,6 +107,7 @@ export function useLoginWithCodeForm({
       notifyError(extractErrorMessage(error, "Invalid credentials. Please try again."));
     } finally {
       setCredentialsSubmitting(false);
+      sendLockRef.current = false;
     }
   };
 
@@ -117,6 +121,8 @@ export function useLoginWithCodeForm({
       notifyError("Go back and enter your password to resend the code.");
       return;
     }
+    if (sendLockRef.current) return;
+    sendLockRef.current = true;
 
     setResendCodeLoading(true);
     try {
@@ -139,6 +145,7 @@ export function useLoginWithCodeForm({
       notifyError(extractErrorMessage(error));
     } finally {
       setResendCodeLoading(false);
+      sendLockRef.current = false;
     }
   };
 

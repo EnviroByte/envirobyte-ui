@@ -114,7 +114,7 @@ export function SidePanel({
       ref={panelRootRef}
       style={dockStyle}
       className={cn(
-        "flex flex-col overflow-hidden rounded-xl border border-gray-100 bg-white shadow-sm transition-[width] duration-300 ease-out",
+        "flex flex-col overflow-hidden rounded-xl border border-gray-100 dark:border-gray-700/60 bg-white dark:bg-gray-800 shadow-sm transition-[width] duration-300 ease-out",
         "w-full shrink-0 self-start justify-self-start",
         railMode ? "lg:w-14" : "lg:w-72",
         "lg:fixed lg:right-0 lg:top-[var(--eb-filter-top-offset)] lg:h-[calc(100dvh-var(--eb-filter-top-offset))] lg:z-30 lg:rounded-none",
@@ -125,29 +125,29 @@ export function SidePanel({
       aria-label={title}
     >
       {railMode ? (
-        <div className="flex min-h-0 flex-1 flex-col items-center gap-1 border-b border-gray-100 bg-white py-2">
+        <div className="flex min-h-0 flex-1 flex-col items-center gap-1 border-b border-gray-100 dark:border-gray-700/60 bg-white dark:bg-gray-800 py-2">
           <button
             type="button"
             onClick={() => setCollapsed(false)}
-            className="flex h-9 w-full items-center justify-center rounded-md text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900"
+            className="flex h-9 w-full items-center justify-center rounded-md text-gray-600 dark:text-gray-300 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-700/40 dark:hover:text-gray-100"
             aria-label="Expand filters"
             title="Expand filters"
           >
             <ChevronsLeft className="h-5 w-5" />
           </button>
-          <Filter className="h-5 w-5 shrink-0 text-gray-400" aria-hidden />
+          <Filter className="h-5 w-5 shrink-0 text-gray-400 dark:text-gray-500" aria-hidden />
           <div className="min-h-0 flex-1" />
         </div>
       ) : (
         <>
-          <div className="flex h-11 shrink-0 items-center justify-between gap-2 border-b border-gray-100 bg-white px-4">
-            <h2 className="min-w-0 flex-1 truncate text-sm font-bold tracking-tight text-gray-900">
+          <div className="flex h-11 shrink-0 items-center justify-between gap-2 border-b border-gray-100 dark:border-gray-700/60 bg-white dark:bg-gray-800 px-4">
+            <h2 className="min-w-0 flex-1 truncate text-sm font-bold tracking-tight text-gray-900 dark:text-gray-100">
               {title}
             </h2>
             <button
               type="button"
               onClick={() => setCollapsed(true)}
-              className="hidden h-9 w-9 shrink-0 items-center justify-center rounded-md text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900 lg:inline-flex"
+              className="hidden h-9 w-9 shrink-0 items-center justify-center rounded-md text-gray-500 dark:text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-700/40 dark:hover:text-gray-100 lg:inline-flex"
               aria-label="Collapse filters"
               title="Collapse filters"
             >
@@ -163,7 +163,7 @@ export function SidePanel({
             {children}
           </div>
           {footer ? (
-            <div className="shrink-0 border-t border-gray-100 bg-white px-4 py-3">
+            <div className="shrink-0 border-t border-gray-100 dark:border-gray-700/60 bg-white dark:bg-gray-800 px-4 py-3">
               {footer}
             </div>
           ) : null}

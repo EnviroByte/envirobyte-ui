@@ -178,7 +178,7 @@ export function ResizableDialog({
     <Dialog open={open} onClose={onClose} className="relative z-50">
       <DialogBackdrop
         transition
-        className="fixed inset-0 bg-black/30 transition-opacity duration-200 data-[closed]:opacity-0"
+        className="fixed inset-0 bg-black/30 dark:bg-black/60 transition-opacity duration-200 data-[closed]:opacity-0"
       />
 
       {/* Centered container — pointer-events-none so clicks pass through to backdrop */}
@@ -191,7 +191,7 @@ export function ResizableDialog({
         <DialogPanel
           ref={panelRef}
           className={cn(
-            "pointer-events-auto relative bg-white rounded-xl shadow-2xl ring-1 ring-slate-200 flex flex-col min-h-0",
+            "pointer-events-auto relative bg-white dark:bg-gray-800 rounded-xl shadow-2xl ring-1 ring-gray-200 dark:ring-gray-700/60 flex flex-col min-h-0",
             allowPopoverOverflow ? "overflow-visible" : "overflow-hidden",
             "animate-in fade-in zoom-in-95 duration-200",
             active && "select-none",
@@ -211,25 +211,25 @@ export function ResizableDialog({
           {/* ── Title bar — drag handle ── */}
           <div
             onMouseDown={startDrag}
-            className="flex items-center justify-between px-5 py-4 border-b border-slate-200 rounded-t-xl cursor-grab active:cursor-grabbing select-none bg-slate-50 shrink-0"
+            className="flex items-center justify-between px-5 py-4 border-b border-gray-200 dark:border-gray-700/60 rounded-t-xl cursor-grab active:cursor-grabbing select-none bg-gray-50 dark:bg-gray-900/40 shrink-0"
           >
             <div className="flex items-center gap-2 min-w-0">
-              <GripHorizontal className="h-4 w-4 text-slate-400 shrink-0" />
+              <GripHorizontal className="h-4 w-4 text-gray-400 dark:text-gray-500 shrink-0" />
               <div className="min-w-0">
                 {title && (
-                  <DialogTitle className="text-base font-bold text-slate-900 truncate">
+                  <DialogTitle className="text-base font-bold text-gray-900 dark:text-gray-100 truncate">
                     {title}
                   </DialogTitle>
                 )}
                 {description && (
-                  <p className="text-xs text-slate-500 mt-0.5 truncate">{description}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 truncate">{description}</p>
                 )}
               </div>
             </div>
             <button
               onMouseDown={(e) => e.stopPropagation()}
               onClick={onClose}
-              className="ml-3 shrink-0 rounded-md p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-200 transition-colors"
+              className="ml-3 shrink-0 rounded-md p-1.5 text-gray-400 hover:text-gray-700 hover:bg-gray-200 dark:text-gray-500 dark:hover:text-gray-200 dark:hover:bg-gray-700/40 transition-colors"
             >
               <X className="h-5 w-5" />
             </button>
@@ -247,7 +247,7 @@ export function ResizableDialog({
 
           {/* ── Optional footer ── */}
           {footer && (
-            <div className="relative z-20 shrink-0 px-5 py-4 border-t border-slate-100 bg-white rounded-b-xl">
+            <div className="relative z-20 shrink-0 px-5 py-4 border-t border-gray-200 dark:border-gray-700/60 bg-white dark:bg-gray-800 rounded-b-xl">
               {footer}
             </div>
           )}

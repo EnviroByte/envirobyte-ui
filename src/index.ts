@@ -164,3 +164,22 @@ export type { SearchTriggerButtonProps } from "./components/generic/CommandPalet
 export { LoginWithCodeForm, useLoginWithCodeForm } from "./components/generic/LoginWithCodeForm";
 export type { LoginWithCodeFormProps, UseLoginWithCodeFormOptions } from "./components/generic/LoginWithCodeForm";
 export type { LoginCodeEndpoints, LoginCodeEmailStatus } from "./lib/login-code-auth";
+
+export {
+  Citation,
+  CitationText,
+  CitationSources,
+  citationComponents,
+  rehypeCitations,
+  CITATION_MARKER_RE,
+  expandMarker,
+  splitCitations,
+  hasCitationMarkers,
+} from "./components/generic/Citation";
+export type {
+  CitationProps,
+  CitationTextProps,
+  CitationSourcesProps,
+  CitationSegment,
+  CitationData,
+} from "./components/generic/Citation";

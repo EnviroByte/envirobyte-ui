@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { AppHubDropdown } from "../AppHubDropdown";
+import { useShortcutLabel } from "../../../lib/useShortcutLabel";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -222,6 +223,7 @@ export function Navbar({
 }: NavbarProps) {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
+  const shortcutLabel = useShortcutLabel();
 
   const userMenuRef = useRef<HTMLDivElement>(null!);
 
@@ -269,9 +271,11 @@ export function Navbar({
               placeholder={searchPlaceholder}
               className="h-8 w-48 rounded-md border border-gray-200 bg-gray-50 pl-8 pr-3 text-sm text-gray-700 placeholder-gray-400 outline-none transition focus:border-primary-400 focus:ring-1 focus:ring-primary-400 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:placeholder-gray-500"
             />
-            <kbd className="absolute right-2 top-1/2 -translate-y-1/2 rounded border border-gray-200 px-1 text-[10px] text-gray-400 dark:border-gray-700">
-              ⌘K
-            </kbd>
+            {shortcutLabel && (
+              <kbd className="absolute right-2 top-1/2 -translate-y-1/2 rounded border border-gray-200 px-1 text-[10px] text-gray-400 dark:border-gray-700">
+                {shortcutLabel}
+              </kbd>
+            )}
           </div>
         )}
       </div>

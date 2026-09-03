@@ -4,6 +4,7 @@ export type { ProviderProps } from "./provider";
 
 // Utilities
 export { cn } from "./lib/utils";
+export { useShortcutLabel } from "./lib/useShortcutLabel";
 
 // Primitives
 export { Button } from "./components/primitives/Button";

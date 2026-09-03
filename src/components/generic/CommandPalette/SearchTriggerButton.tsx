@@ -1,13 +1,14 @@
 "use client";
 
 import { cn } from "../../../lib/utils";
+import { useShortcutLabel } from "../../../lib/useShortcutLabel";
 
 export interface SearchTriggerButtonProps {
   /** Called when the button is clicked */
   onClick: () => void;
   /** Placeholder text shown in the button */
   placeholder?: string;
-  /** Keyboard shortcut label displayed on the right side */
+  /** Keyboard shortcut label. Defaults to the viewer's own platform — ⌘K on Mac, Ctrl K elsewhere. */
   shortcut?: string;
   /** Additional classes on the button element */
   className?: string;
@@ -16,9 +17,11 @@ export interface SearchTriggerButtonProps {
 export function SearchTriggerButton({
   onClick,
   placeholder = "Search...",
-  shortcut = "⌘K",
+  shortcut,
   className,
 }: SearchTriggerButtonProps) {
+  const shortcutLabel = useShortcutLabel(shortcut);
+
   return (
     <button
       type="button"
@@ -41,9 +44,9 @@ export function SearchTriggerButton({
         <path d="m13.314 11.9 2.393 2.393a.999.999 0 1 1-1.414 1.414L11.9 13.314a8.019 8.019 0 0 0 1.414-1.414Z" />
       </svg>
       <span className="flex-1 text-left">{placeholder}</span>
-      {shortcut && (
+      {shortcutLabel && (
         <kbd className="rounded border border-gray-300 bg-gray-200 px-1.5 py-0.5 font-sans text-[10px] text-gray-500 dark:border-gray-500 dark:bg-gray-600 dark:text-white">
-          {shortcut}
+          {shortcutLabel}
         </kbd>
       )}
     </button>

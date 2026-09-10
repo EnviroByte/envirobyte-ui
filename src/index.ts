@@ -49,6 +49,14 @@ export type { EmptyStateProps } from "./components/generic/EmptyState";
 export { ErrorState } from "./components/generic/ErrorState";
 export type { ErrorStateProps } from "./components/generic/ErrorState";
 
+export { AttachedFileChip, FileDropzone } from "./components/generic/FileDropzone";
+export type {
+  AttachedFileChipProps,
+  FileDropzoneHandle,
+  FileDropzoneProps,
+  FileRejection,
+} from "./components/generic/FileDropzone";
+
 export { FilterBar } from "./components/generic/FilterBar";
 export type { FilterBarProps, FilterConfig, FilterOption, FilterValues } from "./components/generic/FilterBar";
 

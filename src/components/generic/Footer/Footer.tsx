@@ -20,11 +20,20 @@ export interface FooterProps {
   year?: number;
 }
 
+// These were relative paths (/privacy, /licensing, /contact). No app that renders this
+// footer has those routes, so every one of them bounced the user to the sign-in page
+// (Brian, 2026-08-21). Point at the pages that already exist on the marketing site —
+// the same URLs EmissionX's own footer uses.
 const defaultLinks: FooterLink[] = [
-  { label: "Privacy Policy", href: "/privacy" },
-  { label: "Licensing", href: "/licensing" },
-  { label: "Contact", href: "/contact" },
+  { label: "Privacy Policy", href: "https://www.envirobyte.com/privacy-policy" },
+  { label: "Licensing", href: "https://www.envirobyte.com/end-user-license-agreement" },
+  { label: "Contact", href: "https://www.envirobyte.com/about/contact" },
 ];
+
+/** Absolute links leave the app, so they open in a new tab; in-app routes stay put. */
+function isExternal(href: string): boolean {
+  return /^https?:\/\//i.test(href);
+}
 
 export function Footer({
   links = defaultLinks,
@@ -44,6 +53,8 @@ export function Footer({
             <a
               key={index}
               href={link.href}
+              target={isExternal(link.href) ? "_blank" : undefined}
+              rel={isExternal(link.href) ? "noopener noreferrer" : undefined}
               className="text-sm text-gray-500 transition-colors hover:text-gray-800 dark:text-zinc-500 dark:hover:text-zinc-200"
             >
               {link.label}

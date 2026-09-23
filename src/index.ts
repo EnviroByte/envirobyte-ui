@@ -29,6 +29,9 @@ export type { BadgeProps } from "./components/generic/Badge";
 export { Breadcrumb } from "./components/generic/Breadcrumb";
 export type { BreadcrumbProps, BreadcrumbItem } from "./components/generic/Breadcrumb";
 
+export { HierarchyTrail } from "./components/generic/HierarchyTrail";
+export type { HierarchyTrailProps, HierarchyTrailItem } from "./components/generic/HierarchyTrail";
+
 export { Card, CardHeader } from "./components/generic/Card";
 export type { CardProps, CardHeaderProps } from "./components/generic/Card";
 

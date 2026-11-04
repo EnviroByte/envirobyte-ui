@@ -69,6 +69,9 @@ export type { FilterChip } from "./components/generic/FilterChips";
 export { FilterSelect } from "./components/generic/FilterSelect";
 export type { FilterSelectProps, FilterSelectOption } from "./components/generic/FilterSelect";
 
+export { InlineFilter, InlineFilterButton, InlineFilterRow } from "./components/generic/InlineFilter";
+export type { InlineFilterOption } from "./components/generic/InlineFilter";
+
 export { Footer } from "./components/generic/Footer";
 export type { FooterProps, FooterLink } from "./components/generic/Footer";
 
